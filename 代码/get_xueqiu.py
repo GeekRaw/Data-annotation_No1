@@ -10,10 +10,8 @@ import requests
 import time
 import urllib3
 
-
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import json
-
 
 proxies = {
 #	"http" : "http://111.222.141.127:8118" # 代理ip
@@ -69,19 +67,7 @@ class Xueqiuspider:
             with open('xueqiu_comment.json', 'a')as f:
                 f.write(str(content).encode("gbk", 'ignore').decode("gbk", "ignore"))
                 f.write("\n")
-                
-"""
-# 参考https://waditu.com/document/2?doc_id=25
-import tushare as ts 
-def getStockData():
-    token = "f37762169efe22bd78fd9826957c2a312034fd5ef967cdd0ecf2b640"
-    ts.set_token(token)
-    pro=ts.pro_api()
-    data = pro.query('stock_basic', exchange='', list_status='L', fields='ts_code,symbol,name,area,industry,list_date')
-    data.to_excel("D://stockData.xlsx")
-"""
-    
-
+            
 # https://www.cnblogs.com/zhangyinhua/p/8037599.html
 if __name__ == '__main__':
     xueqiu = Xueqiuspider()
