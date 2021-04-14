@@ -14,6 +14,8 @@
 }
 .box_2 {
 }
+.ellipse {
+}
 .placeholder {
 }
 .button {
@@ -64,6 +66,8 @@
 .paragraph {
   text-align:left;
 }
+.arrow {
+}
 .text_field {
   color:#000000;
   text-align:left;
@@ -72,17 +76,82 @@
   color:#000000;
   text-align:left;
 }
+.droplist {
+  color:#000000;
+  text-align:left;
+}
+.list_box {
+  color:#000000;
+  text-align:left;
+}
+.checkbox {
+  text-align:left;
+}
 .radio_button {
   text-align:left;
+}
+.table_cell {
+}
+.line {
+}
+.flow_shape {
 }
 .connector {
 }
 .sticky_3 {
   text-align:left;
 }
+.marker {
+  color:#FFFFFF;
+}
 .form_hint {
   color:#999999;
 }
 .form_disabled {
+}
+._默认样式 {
+}
+.shape {
+}
+.fontawesome {
+}
+.title-default {
+  font-family:'PingFang SC Ultralight', 'PingFang SC', sans-serif;
+  font-weight:100;
+  font-style:normal;
+  color:#FFFFFF;
+}
+.title-mouseover {
+  font-family:'PingFang SC Ultralight', 'PingFang SC', sans-serif;
+  font-weight:100;
+  font-style:normal;
+  color:#FFFFFF;
+}
+.title-selected {
+  font-family:'PingFang SC Ultralight', 'PingFang SC', sans-serif;
+  font-weight:100;
+  font-style:normal;
+  color:#FFFFFF;
+}
+.icon {
+}
+.list-default {
+  font-family:'PingFang SC', sans-serif;
+  font-weight:400;
+  font-style:normal;
+  font-size:14px;
+  color:#666666;
+  text-align:left;
+}
+.list-mouseover {
+  font-family:'PingFang SC', sans-serif;
+  font-weight:400;
+  font-style:normal;
+  font-size:14px;
+  color:#666666;
+  text-align:left;
+}
+._文本链接 {
+  color:#0000FF;
 }
 textarea, select, input, button { outline: none; }
