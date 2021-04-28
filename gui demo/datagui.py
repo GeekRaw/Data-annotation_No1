@@ -151,13 +151,27 @@ python对可变对象(list,dict,set)采用引用传递的方式，对不可变�
 curselection()在多选模式下，返回一个元组，元组中是选定元素的下标，用户先进行选择，选择完后点击删除
 获取curselection()返回的元组，逐个读出元组中的元素delete
 
+
+正则表达式
+.可以匹配除换行符之外的任何字符
+*匹配前面的字符0次或多次
+
+特殊字符: \.^$?+*{}[]()|
+使用以上特殊字符的字面值，必须使用\进行转义
+
+re.sub(x,s,m)
+返回一个字符串，每个匹配的地方用x进行替换，返回替换后的字符串最多替换m次
+
+文件读写
+a :打开一个文件用于追加，如果该文件已存在，文件指针将会放在文件的结尾，即新的内容将会被写入到已有内容之后
+如果该文件不存在，创建新文件进行写入
 """
 from tkinter import*
 from tkinter import ttk
 from tkinter.filedialog import*
 import tkinter
 from tkinter.messagebox import askokcancel,showinfo,WARNING
-
+import ast
 
 #存放标签
 tag_all=["标签1","标签2","标签3","标签4","标签5","标签6","标签7","标签8","标签9","标签10","标签11"]
@@ -218,7 +232,7 @@ def new_file():
 #文件导入
 def importfile(lb):
     
-    global filenme
+    global filename
     filename=askopenfilename(defaultextension=".txt")
     if(filename==""):
         filename=None
@@ -230,11 +244,15 @@ def importfile(lb):
         
         f=open(filename,"r")
         for line in f.readlines():
-            comment.append(line)
-            lb.insert("end",line)
+            #先将读出的字符串转成字典，再按照字段读出数据
+            comment_dict=ast.literal_eval(line)
+            
+            comment.append(comment_dict['comment_text'])
+            lb.insert("end",comment_dict['comment_text'])
         
         f.close()
         
+    return filename
         
 #文件保存      
 def filesave():
@@ -359,6 +377,8 @@ def choice_delete(even,choice):
     choice.delete(index)
     
 def tag_add():
+    #创建一个字典保存当前创建的标签内容
+    tag_tmp={}
     tag_add_win=Tk()
     tag_add_win.geometry("350x400")
     tag_add_win.title("新建标签")
@@ -380,7 +400,7 @@ def tag_add():
     #标签确认
     input_tag_button=Button(tag_add_win,text="确认",command=lambda:tag_name_confirm(input_tag))
     input_tag_button.place(x=250,y=25)
-    #input_tag_button.bind("<Button-1>",lambda input_tag:tag_name_confirm(input_tag))
+   
     
     input_choice=Label(fm_tag_choice,text="选项")
     input_choice.place(x=60,y=20)
@@ -389,6 +409,7 @@ def tag_add():
     input_choice=Entry(fm_tag_choice)
     input_choice.place(x=95,y=20)
     #选项确认
+    #确认选项后添加到字典中
     choice_button=Button(fm_tag_choice,text="确认",command=lambda:tag_choice_confirm(input_choice,choice_list))
     choice_button.place(x=250,y=15)
     
@@ -407,6 +428,7 @@ def tag_add():
     choice_sc.config(command=comment_list.yview)
     
     #创建确认按钮
+    #确认创建后，添加到文件中
     tag_confirm_button=Button(fm_add_confirm,text="确认",command=add_message)
     
     tag_confirm_button.place(x=160,y=10)
@@ -604,8 +626,7 @@ def comment_detail(even):
     for item in tag_all:
         tag_list.insert("end",item)
     
-    for i in range(1,30):
-        tag_list.insert("end",i)
+   
     
     
     #放置选择上一条和下一条按钮
@@ -623,6 +644,71 @@ def comment_detail(even):
     detail_win.mainloop()
 
         
+def finished_comment():
+    global comment_detail_index
+    #评论内容
+    
+  
+    finished_win=Tk()
+    finished_win.geometry("400x400")
+    finished_menu=Menu(finished_win)
+    finished_menu.add_command(label='添加标签')
+    finished_menu.add_command(label='删除标签')
+    finished_menu.add_command(label='删除评论')
+    finished_win['menu']=finished_menu
+    
+    fm_text=Frame(finished_win,width=400,height=200)
+    fm_tag=Frame(finished_win,width=400,height=150)
+    fm_button=Frame(finished_win,width=400,height=50,)
+    fm_text.grid(row=0)
+    fm_tag.grid(row=1)
+    fm_button.grid(row=2)
+    #显示详细评论
+    text_detail=Text(fm_text,width=55,height=14)
+    text_detail.pack(side='left')
+    #显示标签信息
+    
+    text_detail.insert("end", str)
+    
+    label1=Label(fm_tag,text="是否推广贴")
+    label1.grid(row=0,column=0)
+    v1=IntVar()
+    v2=IntVar()
+    v1.set(0)
+    v2.set(0)
+    b1=Radiobutton(fm_tag,text="是",variable=v1,value=1)
+    b1.grid(row=0,column=1)
+    b2=Radiobutton(fm_tag,text='否',variable=v1,value=2)
+    b2.grid(row=0,column=2)
+    
+    label2=Label(fm_tag,text="评论情感色彩")
+    label2.grid(row=1,column=0)
+    b3=Radiobutton(fm_tag,text="积极",variable=v2,value=1)
+    b3.grid(row=1,column=1)
+    b4=Radiobutton(fm_tag,text="中性",variable=v2,value=2)
+    b4.grid(row=1,column=2)
+    b5=Radiobutton(fm_tag,text="消极",variable=v2,value=3)
+    b5.grid(row=1,column=3)
+    
+    
+   
+    
+    
+    #放置选择上一条和下一条按钮
+    #点击按钮后更新评论下标索引，和文本中评论内容
+    pre_button=Button(fm_button,text="上一条")
+    pre_button.bind("<Button-1>",lambda event:pre_comment(event,text_detail))
+    
+    nex_button=Button(fm_button,text="下一条")
+    nex_button.bind("<Button-1>",lambda event:nex_comment(event,text_detail))
+    
+    
+    pre_button.place(x=0,y=0)
+    nex_button.place(x=350,y=0)
+    
+    finished_win.mainloop()
+   
+    
         
         
     
@@ -641,11 +727,11 @@ fmenu.add_command(label='另存为',command=filesaveas)
 dmenu=Menu(menubar)
 dmenu.add_command(label='下载',command=download)
 dmenu.add_command(label='生成统计图',command=datachart)
-dmenu.add_command(label='数据标注',command=datasort)
+
 dmenu.add_command(label='添加标注')
 dmenu.add_command(label='删除评论',command=main_delete_multiple)
-dmenu.add_command(label='已标注评论')
-dmenu.add_command(label='未标注评论')
+dmenu.add_command(label='已标注评论',command=finished_comment)
+dmenu.add_command(label='未标注评论',command=finished_comment)
 
 
 menubar.add_cascade(label='文件',menu=fmenu)
