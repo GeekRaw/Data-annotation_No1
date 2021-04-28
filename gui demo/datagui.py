@@ -100,6 +100,9 @@ scrollbar(master,option)
 orient 指定绘制"horizontal"(垂直滚动条) "vertical"(水平滚动条)
 
 
+下拉框 combobox
+current()获取当前所选元素的索引，get()方法获取元素本身
+current(index)可以设置下拉框的默认值
 
 
 
@@ -165,6 +168,21 @@ re.sub(x,s,m)
 文件读写
 a :打开一个文件用于追加，如果该文件已存在，文件指针将会放在文件的结尾，即新的内容将会被写入到已有内容之后
 如果该文件不存在，创建新文件进行写入
+
+类：
+class A:
+    def __init__(self)
+
+_init_()方法为类的构造函数方法，创建这个类的实例时就会调用该方法
+
+self代表类的实例，self在定义类的方法时是必须有的，在调用时，不需要传入相应的参数
+类的方法与普通函数只有一个特别的区别，它们必须有一个额外的第一个参数名称，按照惯例名是self
+
+if __name__=='__main__'(双下划线):的作用
+一个python文件通常有两种使用方法,第一是作为脚本直接执行，第二是import到其他的python脚本中被调用
+if _name_=='main'下的代码只有在第一种情况下(即文件作为脚本直接执行)才会被执行，而import到其他脚本中是不会被执行的
+
+写测试的时候，要将主界面放在__name__=='__main__'下，这样不会弹出主界面
 """
 from tkinter import*
 from tkinter import ttk
@@ -172,6 +190,14 @@ from tkinter.filedialog import*
 import tkinter
 from tkinter.messagebox import askokcancel,showinfo,WARNING
 import ast
+import logging
+
+#设置日志格式
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
+DATE_FORMAT = "%m/%d/%Y %H:%M:%S %p"
+
+#logging.basicConfig(filename='info.log', level=logging.DEBUG, format=LOG_FORMAT, datefmt=DATE_FORMAT)
+logging.basicConfig( level=logging.DEBUG, format=LOG_FORMAT, datefmt=DATE_FORMAT)
 
 #存放标签
 tag_all=["标签1","标签2","标签3","标签4","标签5","标签6","标签7","标签8","标签9","标签10","标签11"]
@@ -234,6 +260,7 @@ def importfile(lb):
     
     global filename
     filename=askopenfilename(defaultextension=".txt")
+    logging.info("导入文件",filename)
     if(filename==""):
         filename=None
     else:
@@ -534,7 +561,8 @@ def datasort():
 def pre_comment(even,text):
     global comment_detail_index
     comment_detail_index-=1
-    print(comment_detail_index)
+    #print(comment_detail_index)
+    logging.info("当前查看下标:",comment_detail_index)
     if comment_detail_index<0:
         comment_detail_index=0
         messagebox.showinfo('提示','已经是第一条评论了')
@@ -547,7 +575,8 @@ def pre_comment(even,text):
 def nex_comment(even,text):
     global comment_detail_index
     comment_detail_index+=1
-    print(comment_detail_index)
+    #print(comment_detail_index)
+    logging.info("当前查看下标:",comment_detail_index)
     
     if comment_detail_index>len(comment):
        comment_detail_index=len(comment)-1;
@@ -564,15 +593,20 @@ def nex_comment(even,text):
 def main_delete_multiple():
     tmp=comment_list.curselection()
     index=list(tmp)
+    
     index.sort(reverse=True)
-    print(index)
+    #print(index)
     
     
     for item in index:
+        logging.info("删除评论索引",item)
         comment_list.delete(item)
     for item in index:
+        logging.info("删除评论",comment[item])
         del comment[item]
-    print(comment)
+        
+    #print(comment)
+
     
     
     #最后将更新后的comment覆盖原来的保存文件
