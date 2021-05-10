@@ -6,186 +6,7 @@ Created on Thu Apr 15 22:39:37 2021
 """
 
 
-"""
-button
-b1=button(windows,text,command)
-command绑定事件
 
-创建一个新窗口
-win=tkinter.Tk() 创建窗口
-win.geometry("600x400"+300+200) 设置窗口的位置及大小
-win.mainloop() 进入消息循环
-
-布局
-pack(pack先依照side命令进行排布，再按照anchor进行对齐)
-相关参数
-side:组件的排布方式
-left,right,top,buttom
-
-anchor 组件的对齐方式
-n(上边),s(下边)，w(左边)，e(右边),nw(左上角),ne(右上角),sw(左下角),se(右下角),center(中心)
-ipadx x方向的内边距  ipady y方向的外边距
-padx x方向的外边距  pady y方向的外边距
-
-label参数
-label(master,option...)
-
-master：框架的父容器
-bg:标签背景色
-cursor，鼠标移动到标签时，光标的形状(可设置为arrow,circle,cross,plus)
-front 设置字体
-text 设置文本
-width 设置标签的宽度
-height 标签的高度
-padx x轴间距
-pady y轴间距
-fill x 横向填充 y 纵向填充  both 横向和纵向都填充
-
-place()布局
-anchor定义控件在窗体内的方位
-in 此选项定义控件相对于参考控件的位置
-x 定义控件的绝对水平位置
-y 定义控件的绝对垂直位置
-(x,y)即为距离窗体左上角的坐标
-
-grid()布局
-
-输入框
-Entry
-
-如果设置菜单选项的大小?
-
-add_command
-add_commnd添加菜单项
-如果该菜单是顶层菜单，则添加的菜单以此向右添加
-如果该菜单是顶层菜单的一个菜单项，则添加的是下拉菜单
-
-add_command参数
-label 指定菜单项的名称
-command  指定被点击时调用的方法
-acceletor 指定快捷键
-underline  指定是否有下划线
-
-add_cascade 添加子菜单
-add_cascade的作用是为了引出后面的菜单
-
-add_cascade参数
-menu  指定把某个菜单级联到该菜单项上
-label  指定该菜单项的名称
-
-控件的command参数要通过 command=lambda:的形式传参数
-调用window.quit退出窗口
-
-弹出菜单 Menu中的post方法，接受两个参数，即x和y坐标，会在相应的位置弹出菜单
-
-canvas create_arc绘制扇形
-create_arc参数
-canvas.create_arc(coord,start,extent,fill)
-
-coord元组设置矩形所形成的椭圆的左上角坐标及右下角坐标:
-coord=x1,y1,x2,y2
-
-start 从x轴正方向(起始方向)开始，单位未度进行绘制，start为起始绘制角度的设置
-extent：以start参数作为参考，以start参数给定的角度开始，逆时针延伸角度，这个角度为extent设置的值
-fill：设施绘制区域的填充颜色 fill="red"
-
-create_text  画布上添加文字信息
-create_text(x,y,text) x,y为文字信息的坐标
-
-定义了画布后，图形的起始和结束坐标是相对与画布的，而不是相对于窗体
-
-scrollbar滚动条
-scrollbar(master,option)
-
-orient 指定绘制"horizontal"(垂直滚动条) "vertical"(水平滚动条)
-
-
-下拉框 combobox
-current()获取当前所选元素的索引，get()方法获取元素本身
-current(index)可以设置下拉框的默认值
-
-
-
-radiobutton 单选按钮
-单选按钮组件用于实现多选一的问题，每一个单选按钮都可以与以一个python的函数或方法与之相关联
-当按钮按下的时，对应的函数或方法将被自动执行
-每一组单选按钮组件应该只与一个变量相关联，然后每一个按钮表示该变量的单一值
-
-参数
-radiobutton(master,options)
-
-组件选项：
-command 指定该按钮相关联的函数或方法
-value 1 标志该单选按钮的值 2 在同一组中的所有按钮应该拥有各不相同的值  
-      3 通过将该值与variable选项的值对比，即可判断用户选中了哪个按钮
-
-variable 1 同一组件中的所有按钮的variable选项应该都指向同一个变量
-         2 通过该变量与value选项的值对比，即可判断用户选中了哪个按钮
-         用于跟踪用户的选择，在所有radiobutton之间共享
-
-单选按钮方法
-deselect() 取消该按钮的选中状态
-select() 将按钮设置为选中状态
-
-message box
-确认/取消对话框 askokcancel 
-askokcancel(title,message,**options)
-askokcancel返回布尔类型，点击确认返回true,点击取消返回false
-
-鼠标事件
-<Button-1> 鼠标左键
-<Double-Button-1> 双击鼠标左键
-
-listbox相关方法
-curselection()
-返回一个元组，包含被选中的选项的序号(从0开始)
-
-delete(first,last=None)
-删除参数first到last范围内(包含first和last)的所有选项
-如果忽略last参数，表示删除first参数指定的选项
-
-get(first,last=None)
-返回一个元组，包含参数first到last范围内的所有选项的文本
-
-python对可变对象(list,dict,set)采用引用传递的方式，对不可变对象(number,string,tuple)等，采用值传递
-要在函数内修改外部的不可变对象，可以将其定义为全局对象(global)
-
-批量删除
-curselection()在多选模式下，返回一个元组，元组中是选定元素的下标，用户先进行选择，选择完后点击删除
-获取curselection()返回的元组，逐个读出元组中的元素delete
-
-
-正则表达式
-.可以匹配除换行符之外的任何字符
-*匹配前面的字符0次或多次
-
-特殊字符: \.^$?+*{}[]()|
-使用以上特殊字符的字面值，必须使用\进行转义
-
-re.sub(x,s,m)
-返回一个字符串，每个匹配的地方用x进行替换，返回替换后的字符串最多替换m次
-
-文件读写
-a :打开一个文件用于追加，如果该文件已存在，文件指针将会放在文件的结尾，即新的内容将会被写入到已有内容之后
-如果该文件不存在，创建新文件进行写入
-
-类：
-class A:
-    def __init__(self)
-
-_init_()方法为类的构造函数方法，创建这个类的实例时就会调用该方法
-
-self代表类的实例，self在定义类的方法时是必须有的，在调用时，不需要传入相应的参数
-类的方法与普通函数只有一个特别的区别，它们必须有一个额外的第一个参数名称，按照惯例名是self
-
-if __name__=='__main__'(双下划线):的作用
-一个python文件通常有两种使用方法,第一是作为脚本直接执行，第二是import到其他的python脚本中被调用
-if _name_=='main'下的代码只有在第一种情况下(即文件作为脚本直接执行)才会被执行，而import到其他脚本中是不会被执行的
-
-写测试的时候，要将主界面放在__name__=='__main__'下，这样不会弹出主界面
-
-如果要使用函数修改不变量，可以将要修改的值用列表存储，然后向函数传递列表
-"""
 from tkinter import*
 from tkinter import ttk
 from tkinter.filedialog import*
@@ -195,6 +16,11 @@ import ast
 import logging
 import json
 import os
+import copy
+import time
+import threading
+from get_xueqiu import Xueqiuspider
+
 
 #设置日志格式
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
@@ -212,25 +38,32 @@ class stock:
         self.label_list=[]
         self.tag=0
 
-
+#判断是否导入了文件
+global is_import_file
+is_import_file=False
         
 #tag_all存放所有的标签信息
 tag_all=[]
-f=open('tag.json','r')
-for line in f.readlines():
-    dic=json.loads(line)
-    tag_all.append(dic)
-f.close()
+if os.path.exists("tag.json")==False:
+    f=open('tag.json','w')
+    f.close()
+else:
+    f=open('tag.json','r')
+    for line in f.readlines():
+        dic=json.loads(line)
+        tag_all.append(dic)
+    f.close()
 
 
 
-#comment_all存放所有的评论信息(评论,标签，标志位)
+#comment_all从xueqiu_comment文件中读取数据，存放所有的评论信息(评论,标签，标志位)
 #comment_all存放stock结构体
 comment_all=[]
 
 f=open('xueqiu_comment.json','r')
 for line in f.readlines():
     comment_dict=ast.literal_eval(line)
+    
     tmp=stock()
     tmp.comment_text=comment_dict['comment_text']
     for item in tag_all:
@@ -250,9 +83,15 @@ comment=[]
  #评论下标,双击主界面某一评论时，更新该值
 global comment_detail_index
 
-#存放统计数据的选项统计信息
+
 data_label=[]
 
+#存放统计数据的选项统计信息
+data_list=[]
+
+#开始下载/停止下载标志位
+download_flag=[]
+download_flag.append(1)
 
 if os.path.exists("statistics.json")==False:
     f=open('statistics.json','w')
@@ -262,20 +101,18 @@ else:
     for line in f.readlines():
         dic=json.loads(line)
     
-        for key in dic:
-            if key!='tag':
-                dic[key]=0
-        data_label.append(dic)
+      
+        data_list.append(dic)
     f.close()
 
-for item in data_label:
+for item in data_list:
     print(item)
 
 #存放已经标记的评论
 labeled_comment=[]
 
 if os.path.exists("labeled_comment.json")==False:
-    f=open('labeled_comment,json','w')
+    f=open('labeled_comment.json','w')
     f.close()
 else:
     f=open('labeled_comment.json','r')
@@ -288,6 +125,8 @@ else:
         tmp.tag=comment_dict['tag']
         labeled_comment.append(tmp)
     f.close()
+    
+    
     
 
 
@@ -340,6 +179,7 @@ def new_file():
 def importfile(lb):
     
     global filename
+    global is_import_file
     filename=askopenfilename(defaultextension=".txt")
     logging.info("导入文件",filename)
     if(filename==""):
@@ -359,6 +199,7 @@ def importfile(lb):
             lb.insert("end",comment_dict['comment_text'])
         
         f.close()
+        is_import_file=True
         
     return filename
         
@@ -379,33 +220,51 @@ def filesaveas():
     filename=f
     #存文件
   
-            
-#3个提示信息
-def downloadMessage1(nwin):
-    msg=Label(nwin,text="下载中...")#padx设置x方向内边距, pady设置y方向内边距
-    msg.grid(row=2)
-    
-def downloadMessage2(nwin):
-    msg=Label(nwin,text="下载停止")#padx设置x方向内边距, pady设置y方向内边距
-    msg.grid(row=2)
 
-def downloadMessage3(nwin):
-    msg=Label(nwin,text="下载完毕")#padx设置x方向内边距, pady设置y方向内边距
-    msg.grid(row=2)
+    
+    
     
 #下载管理
-def download():
+def download_start(stock_num,dwin,download_progress,flag):
+     xueqiu = Xueqiuspider()
+     t=threading.Thread(target=xueqiu.run(stock_num,dwin,download_progress,flag),name='t')
+     t.start()
+
+def download_stop(flag):
+    t=threading.Thread(target=is_download_stop(flag),name='t2')
+    t.start()
+
+def is_download_stop(flag):
+    flag[0]=0
+    print('停止下载')
+
+#判断用户输入是否正确
+def is_stock_correct(stock_num):
+    if (len(stock_num)==8 and (re.match('SH600*', stock_num).span()!=None or re.match('SH601*', stock_num).span()!=None or re.match('SH603*', stock_num).span()!=None or re.match('SH605*', stock_num).span()!=None or re.match('SH688*', stock_num).span()!=None or re.match('SZ000*', stock_num).span()!=None or re.match('SZ001*', stock_num).span()!=None or re.match('SZ002*', stock_num).span()!=None or re.match('SZ300*', stock_num).span()!=None)):
+        download_start()
+    else:
+        messagebox
+        
+    
+def download(flag):
+    strV='SH601318'
     dwin=Tk()
     dwin.title("下载管理")
-    dwin.geometry("400x200")
-    label1=Label(dwin,text="股票代码")
-    info1=Entry(dwin,font=('Arial',14))
-    label1.grid(row=0,column=0)
-    info1.grid(row=0,column=1)
-    begin=Button(dwin,text="开始下载",command=lambda:downloadMessage1(dwin))
-    begin.grid(row=1,column=0,padx=50,pady=50)
-    end=Button(dwin,text="停止下载",command=lambda:downloadMessage2(dwin))
-    end.grid(row=1,column=1,pady=50)
+    dwin.geometry("400x250")
+    label_download=Label(dwin,text="股票代码")
+    stock_num=Entry(dwin,font=('Arial',14))
+    
+    label_download.place(x=40,y=10)
+    stock_num.place(x=100,y=10)
+    start_download=Button(dwin,text="开始下载",command=lambda:download_start(stock_num.get(),dwin,download_progress,flag))
+    start_download.place(x=50,y=100)
+    stop_download=Button(dwin,text="停止下载",command=lambda:download_stop(download_flag))
+    stop_download.place(x=300,y=100)
+    
+    download_progress=ttk.Progressbar(dwin,length=200,mode="determinate",orient=HORIZONTAL)
+    download_progress.place(x=100,y=150)
+    
+    
     
     dwin.mainloop()
     
@@ -413,7 +272,7 @@ def download():
 #用listbox存选项
 #用循环画多个扇形
 #统计图中读出的数据格式
-data_list=[{'tag':'是否为推广贴','是':'50','否':'60'},{'tag':'评论情感色彩','积极':'70','消极':'100','中立':'20'},{'tag':'是否与股票相关','是':'50','否':'44'}]
+#data_list=[{'tag':'是否为推广贴','是':'50','否':'60'},{'tag':'评论情感色彩','积极':'70','消极':'100','中立':'20'},{'tag':'是否与股票相关','是':'50','否':'44'}]
 
 #扇形填充颜色
 data_color=['red','blue','yellow','green','purple','orange','white','black']
@@ -429,8 +288,13 @@ def show_chart(event,canvas_chart,data_label,data_listbox):
     
     #统计标签选项总数
     count_sum=0
+    for item in data_list:
+        print(item)
+        
     for key in data_list[index]:
         if key!='tag':
+            print('key:',key)
+            
             count_sum=count_sum+int(data_list[index][key])
     print('sum:',count_sum)       
     #绘制扇形
@@ -441,18 +305,18 @@ def show_chart(event,canvas_chart,data_label,data_listbox):
     
     for key in data_list[index]:
         if key!='tag':
-            canvas_chart.create_arc(250,250,50,50,start=init_arc,extent=int(data_list[index][key])/count_sum*360,fill=data_color[i])
-            init_arc=init_arc+int(data_list[index][key])/count_sum*360
-            data_tmp=key+'  '+data_color[i]+'  '+str(int(int(data_list[index][key])/count_sum*100))+'%'
-            data_listbox.insert(END,data_tmp)
-            i=i+1
+            if count_sum!=0:
+                canvas_chart.create_arc(250,250,50,50,start=init_arc,extent=int(data_list[index][key])/count_sum*360,fill=data_color[i])
+                init_arc=init_arc+int(data_list[index][key])/count_sum*360
+                data_tmp=key+'  '+data_color[i]+'  '+str(int(int(data_list[index][key])/count_sum*100))+'%'
+                data_listbox.insert(END,data_tmp)
+                if int(data_list[index][key])==count_sum:
+                    break
+                i=i+1
     
     
-        
     
-
-
-    
+#data_label是下拉框，在下拉框中选择标签后生成统计图和相关信息  
 def datachart():
     cwin=Tk()
     cwin.title("统计图")
@@ -500,7 +364,7 @@ def tag_delete(tag_listbox):
         f.close()
         
         #在标签管理类中删除标签后也要在统计图文件中删除对应的标签
-        #删除对应的标签后tag_all和comment和comment_all都要更新，重新从文件中读取数据
+        #统计图中是否需要删除标签?
     
    
 
@@ -530,10 +394,13 @@ def tag_choice_confirm(enchoice,choicelist,tag_tmp,data_label,choice_index):
     enchoice.delete(0,END)
 
 #新建标签时，删除标签选项信息   
-def choice_delete(even,choice):
+def choice_delete(even,choice,tag_tmp):
     tmp=choice.curselection()
-    print(tmp)
+    
     index=tmp[0]
+    del tag_tmp[choice.get(index)]
+    for item in tag_tmp:
+        print(item)
     choice.delete(index)
     
    
@@ -549,7 +416,6 @@ def create_confirm(event,tag_tmp,new_label,data_label,tag_all,tag_listbox):
     f=open("tag.json","a")
     #确认后将新的标签信息写回到listbox中
     
-   
     tag_tmp=json.dumps(tag_tmp,ensure_ascii=False)
     f.writelines(tag_tmp)
     f.write('\n')
@@ -558,10 +424,11 @@ def create_confirm(event,tag_tmp,new_label,data_label,tag_all,tag_listbox):
     #将标签写入到统计数据中
     #要先将统计数据中是选项计数清零，加入新的标签后再写回文件中
    
-    data_label.append(new_label)
+    data_list.append(new_label)
+    
     
     f=open('statistics.json','w')
-    for item in data_label:
+    for item in data_list:
         print(item)
         item=json.dumps(item,ensure_ascii=False)
         f.writelines(item)
@@ -628,7 +495,7 @@ def tag_add(tag_listbox):
     choice_list.pack(side=LEFT,fill=BOTH,expand=True)
     #右键删除选项
     #删除listbox对应项后，也要删除tag_tmp字典中的对应项
-    choice_list.bind('<Button-3>',lambda event:choice_delete(event,choice_list))
+    choice_list.bind('<Button-3>',lambda event:choice_delete(event,choice_list,tag_tmp))
 
     #滚动条动，列表跟着滚动
     choice_sc.config(command=comment_list.yview)
@@ -725,19 +592,51 @@ def main_delete_multiple():
     index.sort(reverse=True)
     #print(index)
     
+    #删除提示
+    value=askokcancel('提示','确认删除?')
+    if value==True:
+          for item in index:
+              logging.info("删除评论索引")
+              comment_list.delete(item)
+          #根据tag删除评论
+          #xueqiu_comment能正常删除，但是labeled_comment不能正常删除
+          for item in index:
+              logging.info("删除评论")
+              print("删除评论comment:",comment[item])
+              print("删除评论comment_all:",comment_all[item].comment_text)
+              del comment[item]
+              if comment_all[item].tag==1:
+                 for comment_tmp in labeled_comment:
+                     if comment_tmp.comment_text==comment_all[item].comment_text:
+                         print(comment_tmp.comment_text)
+                         del comment_tmp
+                         print("删除",comment_tmp)
+                         del comment_all[item]
+                         print("删除",comment_all[item])
+              else:
+                  del comment_all[item]
+                  print("删除",comment_all[item])
+          
+          f=open('xueqiu_comment.json','w')
+          
+          for item in comment_all:
+              tmp={}
+              item=item.__dict__
+              tmp['comment_text']=item['comment_text']
+              tmp['tag']=item['tag']
+              f.write(str(tmp))
+              f.write('\n')
+          f.close()
+          
+          f=open('labeled_comment.json','w')
+          for item in labeled_comment:
+              tmp=item.__dict__
+              comment_tmp=json.dumps(tmp,ensure_ascii=False)
+              f.write(comment_tmp)
+              f.write('\n')
+          f.close()
     
-    for item in index:
-        logging.info("删除评论索引",item)
-        comment_list.delete(item)
-    for item in index:
-        logging.info("删除评论",comment[item])
-        del comment[item]
-        
-    #print(comment)
 
-    
-    
-    #最后将更新后的comment覆盖原来的保存文件
     
 #使用3个frame划分布局
 #上半部分放text显示评论，下半部分放评论标签,最底放两个按钮
@@ -812,76 +711,21 @@ def comment_detail(even):
     detail_win.mainloop()
 
         
-def finished_comment():
-    global comment_detail_index
-    #评论内容
-    
-  
-    finished_win=Tk()
-    finished_win.geometry("400x400")
-    finished_menu=Menu(finished_win)
-    finished_menu.add_command(label='添加标签')
-    finished_menu.add_command(label='删除标签')
-    finished_menu.add_command(label='删除评论')
-    finished_win['menu']=finished_menu
-    
-    fm_text=Frame(finished_win,width=400,height=200)
-    fm_tag=Frame(finished_win,width=400,height=150)
-    fm_button=Frame(finished_win,width=400,height=50,)
-    fm_text.grid(row=0)
-    fm_tag.grid(row=1)
-    fm_button.grid(row=2)
-    #显示详细评论
-    text_detail=Text(fm_text,width=55,height=14)
-    text_detail.pack(side='left')
-    #显示标签信息
-    
-    text_detail.insert("end", str)
-    
-    label1=Label(fm_tag,text="是否推广贴")
-    label1.grid(row=0,column=0)
-    v1=IntVar()
-    v2=IntVar()
-    v1.set(0)
-    v2.set(0)
-    b1=Radiobutton(fm_tag,text="是",variable=v1,value=1)
-    b1.grid(row=0,column=1)
-    b2=Radiobutton(fm_tag,text='否',variable=v1,value=2)
-    b2.grid(row=0,column=2)
-    
-    label2=Label(fm_tag,text="评论情感色彩")
-    label2.grid(row=1,column=0)
-    b3=Radiobutton(fm_tag,text="积极",variable=v2,value=1)
-    b3.grid(row=1,column=1)
-    b4=Radiobutton(fm_tag,text="中性",variable=v2,value=2)
-    b4.grid(row=1,column=2)
-    b5=Radiobutton(fm_tag,text="消极",variable=v2,value=3)
-    b5.grid(row=1,column=3)
-    
-    
-   
-    
-    
-    #放置选择上一条和下一条按钮
-    #点击按钮后更新评论下标索引，和文本中评论内容
-    pre_button=Button(fm_button,text="上一条")
-    pre_button.bind("<Button-1>",lambda event:pre_comment(event,text_detail))
-    
-    nex_button=Button(fm_button,text="下一条")
-    nex_button.bind("<Button-1>",lambda event:nex_comment(event,text_detail))
-    
-    
-    pre_button.place(x=0,y=0)
-    nex_button.place(x=350,y=0)
-    
-    finished_win.mainloop()
+
    
 #未标注评论
 
 
+
 #查看上一条未来标注评论
-def pre_unlabeled_comment(unlabeled_index,unlabeled_comment_list,text):
+#标签和按钮重新布局
+def pre_unlabeled_comment(fm_choice,unlabeled_index,unlabeled_comment_list,text):
+    for widget in fm_choice.winfo_children():
+        widget.grid_forget()
+    
+     
     unlabeled_index[0]=unlabeled_index[0]-1
+    print("评论下标",unlabeled_index[0])
     if unlabeled_index[0]<0:
         unlabeled_index[0]=0
         messagebox.showinfo('提示','已经是第一条评论了')
@@ -889,11 +733,18 @@ def pre_unlabeled_comment(unlabeled_index,unlabeled_comment_list,text):
     text.insert('end',unlabeled_comment_list[unlabeled_index[0]].comment_text)
         
 #查看下一条未标注评论
-def nxt_unlabeled_comment(unlabeled_index,unlabeled_comment_list,text):
-    unlabeled_index[0]=unlabeled_index[0]+1
+#标签和按钮重新布局
+#选项的选择信息没有用的是上一条
+
+def nxt_unlabeled_comment(fm_choice,unlabeled_index,unlabeled_comment_list,text):
+    for widget in fm_choice.winfo_children():
+        widget.grid_forget()
     
+   
+    unlabeled_index[0]=unlabeled_index[0]+1
+    print("评论下标:",unlabeled_index[0])
     if unlabeled_index[0]>=len(unlabeled_comment_list):
-        unlabeled_index[0]=len(unlabeled_comment_list)-1
+        unlabeled_index[0]=len(unlabeled_comment_list)
         messagebox.showinfo('提示','已经是最后一条评论了')
     
     text.delete('1.0','end')
@@ -901,8 +752,9 @@ def nxt_unlabeled_comment(unlabeled_index,unlabeled_comment_list,text):
 
 #记录对选项的选择
 #传入一个stock结构体，记录当前的选择
-def select(v,index,tag_all,unlabeled_index,unlabeled_comment_list):
+def select(v,index,unlabeled_index,unlabeled_comment_list):
     print('select:',v.get())
+    print(len(unlabeled_comment_list))
     unlabeled_comment_list[unlabeled_index[0]].label_list[index]['choice']=v.get()
     
     print('tag:',unlabeled_comment_list[unlabeled_index[0]].label_list[index])
@@ -910,9 +762,13 @@ def select(v,index,tag_all,unlabeled_index,unlabeled_comment_list):
 #确认对评论的标注,将已经标注的文件写入到labeled_comment.json中
 #要将xueqiu_comment中对应评论的tag改为1,写回到xueqiu_comment中
 #统计图数据中对应标签的选项计数递增,点击确认后写回到统计图数据文件中
-def b_confirm(event,unlabeled_index,unlabeled_comment_list):
+#将新的评论加入到labeled_commen中
+def b_confirm(event,unlabeled_index,unlabeled_comment_list,data_list,labeled_comment):
+    labeled_comment.append(unlabeled_comment_list[unlabeled_index[0]].__dict__)
+    print('新增已标注评论:',unlabeled_comment_list[unlabeled_index[0]])
+    
     f=open('labeled_comment.json','a')
-    #问题：选项的值没有更新
+    
     tmp=unlabeled_comment_list[unlabeled_index[0]].__dict__
     comment_tmp=json.dumps(tmp,ensure_ascii=False)
     f.write(comment_tmp)
@@ -920,17 +776,59 @@ def b_confirm(event,unlabeled_index,unlabeled_comment_list):
     
     f.close()
     #更新xueqiu_comment中tag的值
+    #找到对应的评论
     
-
+    #stock object is not iterable
+    print(unlabeled_comment_list[unlabeled_index[0]].comment_text)
+    print(unlabeled_comment_list[unlabeled_index[0]].tag)
+        
+    for item in comment_all:
+        if item.comment_text==unlabeled_comment_list[unlabeled_index[0]].comment_text:
+            item.tag=1
+    
+    
+    #更新xueqiu_comment
+    
+    f=open('xueqiu_comment.json','w')
+    for item in comment_all:
+        tmp={}
+        item=item.__dict__
+        tmp['comment_text']=item['comment_text']
+        tmp['tag']=item['tag']
+        f.write(str(tmp))
+        f.write('\n')
+    f.close()
+    
+        
+        
+    
+    #遍历所有标签，得到被选中的选项
+    
+    for item in unlabeled_comment_list[unlabeled_index[0]].label_list:
+        for key in item:
+            if key!='tag'and key!='choice':
+                if item[key]==item['choice']:
+                    for tmp in data_list:
+                        if tmp['tag']==item['tag']:
+                            for tmp_key in tmp:
+                                if tmp_key==key:
+                                    tmp[tmp_key]=str(int(tmp[tmp_key])+1)
+                       
+    
+    for item in data_list:
+        print(item)
+        
+    #将更新后的data_list写回statistics.json中
+    f=open('statistics.json','w')
+    for item in data_list:
+         item=json.dumps(item,ensure_ascii=False)
+         f.writelines(item)
+         f.write('\n')
+    f.close()
+        
 #对标签的选项进行选择
-
 def label_choice(even,fm_choice,label_list,tag_all,unlabeled_index,unlabeled_comment_list):
     #隐藏没有选定的标签的选项
-    unlabeled_comment_list[unlabeled_index[0]].label_list=tag_all
-    print(unlabeled_comment_list[unlabeled_index[0]].comment_text)
-    print(unlabeled_comment_list[unlabeled_index[0]].label_list)
-    
-    
     for widget in fm_choice.winfo_children():
         widget.grid_forget()
         
@@ -939,28 +837,82 @@ def label_choice(even,fm_choice,label_list,tag_all,unlabeled_index,unlabeled_com
     global v
     v=IntVar()
     #设置选项的默认值
-    v.set(tag_all[index]['choice'])
-    print(v.get())
+    
+    #v.set(tag_all[index]['choice'])
+    #为什么v的值没有更新？
+    
+    v.set(unlabeled_comment_list[unlabeled_index[0]].label_list[index]['choice'])
+    print("v:",v.get())
+    print("当前评论默认选项:",unlabeled_comment_list[unlabeled_index[0]].label_list[index]['choice'])
     
     #根据标签选项生成按钮
-    for key in tag_all[index]:
+   
+    for key in unlabeled_comment_list[unlabeled_index[0]].label_list[index]:
         if key!='tag'and key!='choice':
-            b=Radiobutton(fm_choice,text=key,variable=v,value=tag_all[index][key],command=lambda:select(v,index,tag_all,unlabeled_index,unlabeled_comment_list))
+           
+            b=Radiobutton(fm_choice,text=key,variable=v,value=unlabeled_comment_list[unlabeled_index[0]].label_list[index][key],command=lambda:select(v,index,unlabeled_index,unlabeled_comment_list))
+           
             b.grid(row=0,column=i)
             i=i+1
-            
-            
-def unlabeled_comment():
+
+#提示是否删除
+#转跳到下一条评论再删除
+
+def unlabeled_comment_delete(fm_choice,comment_list,unlabeled_index,unlabeled_comment_list,labeled_comment_text):
+     value=askokcancel('提示','确认删除?')
+     if value==True:
+         nxt_unlabeled_comment(fm_choice,unlabeled_index,unlabeled_comment_list,labeled_comment_text)
+         print("unlabeled_index:",unlabeled_index[0])
+         print("当前评论:",unlabeled_comment_list[unlabeled_index[0]].comment_text)
+         print("删除评论:",unlabeled_comment_list[unlabeled_index[0]-1].comment_text)
+        
+         #删除评论comment和comment_all
+        
+         
+         for index in range(0,len(comment_all)):
+             if comment_all[index].comment_text==unlabeled_comment_list[unlabeled_index[0]-1].comment_text:
+                 break;
+         #主界面评论没有被删除
+         print("index:",index)
+         
+         print("comment_all删除:",comment_all[index].comment_text)
+         print("listbox删除:",comment_list.get(index))
+         #判断listbox不为空
+         print("is_import_file:",is_import_file)
+         if is_import_file==True:
+             comment_list.delete(index)
+             del comment[index]
+        
+         del unlabeled_comment_list[unlabeled_index[0]-1]
+        
+         del comment_all[index]
+         
+         #更新xueqiu_comment
+         
+         f=open('xueqiu_comment.json','w')
+         for item in comment_all:
+             tmp={}
+             item=item.__dict__
+             tmp['comment_text']=item['comment_text']
+             tmp['tag']=item['tag']
+             f.write(str(tmp))
+             f.write('\n')
+         f.close()
+         
+         
+    
+def unlabeled_comment(comment_list):
     unlabeled_comment_win=Toplevel()
     unlabeled_comment_win.geometry("500x470")
     unlabeled_comment_win.title('未标注评论')
+    
     unlabeled_menu=Menu(unlabeled_comment_win)
-    unlabeled_menu.add_command(label='添加标签')
-    unlabeled_menu.add_command(label='删除标签')
-    unlabeled_menu.add_command(label='删除评论')
+  
+    unlabeled_menu.add_command(label='删除评论',command=lambda :unlabeled_comment_delete(fm_choice,comment_list,unlabeled_index,unlabeled_comment_list,unlabeled_comment_text))
     unlabeled_comment_win['menu']=unlabeled_menu
     
     #评论下标
+    
     unlabeled_index=[]
     unlabeled_index.append(0)
     #数据不会在这里更新
@@ -972,6 +924,10 @@ def unlabeled_comment():
     unlabeled_comment_list=[]
     for item in comment_all:
         if item.tag=='0':
+            #这里用了浅拷贝，应该使用深拷贝
+            #item.label_list=tag_all;
+            item.label_list=copy.deepcopy(tag_all)
+            #标签正常导入
             unlabeled_comment_list.append(item)
     
     print("评论长度:",len(unlabeled_comment_list))
@@ -996,7 +952,7 @@ def unlabeled_comment():
     fm_confirm.place(x=0,y=400)
     fm_page.place(x=0,y=435)
     
-    unlabeled_comment_text=Text(fm_text,width=72,height=15)
+    unlabeled_comment_text=Text(fm_text,width=70,height=15)
     unlabeled_comment_text.grid(row=0,column=0)
     print(unlabeled_comment_list[0].comment_text)
     unlabeled_comment_text.insert('end',str(unlabeled_comment_list[0].comment_text))
@@ -1012,16 +968,295 @@ def unlabeled_comment():
     #点击确认后将评论信息写入到已标注文件中，同时需要更新统计图中的选项对应的计数
     tag_confirm_button=Button(fm_confirm,text='确认')
     tag_confirm_button.place(x=230,y=0)
-    tag_confirm_button.bind('<Button-1>',lambda event:b_confirm(event,unlabeled_index,unlabeled_comment_list))
+    tag_confirm_button.bind('<Button-1>',lambda event:b_confirm(event,unlabeled_index,unlabeled_comment_list,data_list,labeled_comment))
     
-    pre=Button(fm_page,text='上一条',command=lambda:pre_unlabeled_comment(unlabeled_index,unlabeled_comment_list,unlabeled_comment_text))
+    pre=Button(fm_page,text='上一条',command=lambda:pre_unlabeled_comment(fm_choice,unlabeled_index,unlabeled_comment_list,unlabeled_comment_text))
     pre.place(x=5,y=0)
     
-    nxt=Button(fm_page,text='下一条',command=lambda:nxt_unlabeled_comment(unlabeled_index,unlabeled_comment_list,unlabeled_comment_text))
+    nxt=Button(fm_page,text='下一条',command=lambda :nxt_unlabeled_comment(fm_choice,unlabeled_index,unlabeled_comment_list,unlabeled_comment_text))
     nxt.place(x=450,y=0)
     
+    
     unlabeled_comment_win.mainloop()
-       
+
+#更新评论同时更新old_labeled_choice
+def labeled_nxt_comment(fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice):
+    for widget in fm_choice.winfo_children():
+        widget.grid_forget()
+    
+    labeled_index[0]=labeled_index[0]+1
+    if labeled_index[0]>len(labeled_comment):
+        labeled_index[0]=len(labeled_comment)
+        messagebox.showinfo('提示','已经是最后一条评论了')
+    
+    labeled_comment_text.delete('1.0','end')
+    labeled_comment_text.insert('end',labeled_comment[labeled_index[0]].comment_text)
+    
+    #更新选项记录
+    old_labeled_choice=[]
+   
+   
+    for i in range(0,len(labeled_comment[labeled_index[0]].label_list)):
+        tmp={}
+        for key in labeled_comment[labeled_index[0]].label_list[i]:
+            if key=='tag':
+                tmp['tag']=labeled_comment[labeled_index[0]].label_list[i]['tag']
+                
+            if key=='choice':
+                tmp['old_choice']=labeled_comment[labeled_index[0]].label_list[i]['choice']
+        old_labeled_choice.append(tmp)
+    
+    for item in old_labeled_choice:
+        print("old_labeled_choice",item)
+            
+
+def labeled_pre_comment(fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice):
+    for widget in fm_choice.winfo_children():
+        widget.grid_forget()
+    
+    labeled_index[0]=labeled_index[0]-1
+    if labeled_index[0]<0:
+        labeled_index[0]=0
+        messagebox.showinfo('提示','已经是第一条评论了')
+    
+    labeled_comment_text.delete('1.0','end')
+    labeled_comment_text.insert('end',labeled_comment[labeled_index[0]].comment_text)
+    
+    #更新选项记录
+    old_labeled_choice=[]
+   
+   
+    for i in range(0,len(labeled_comment[labeled_index[0]].label_list)):
+        tmp={}
+        for key in labeled_comment[labeled_index[0]].label_list[i]:
+            if key=='tag':
+                tmp['tag']=labeled_comment[labeled_index[0]].label_list[i]['tag']
+                
+            if key=='choice':
+                tmp['old_choice']=labeled_comment[labeled_index[0]].label_list[i]['choice']
+        old_labeled_choice.append(tmp)
+    
+    for item in old_labeled_choice:
+        print("old_labeled_choice",item)
+            
+    
+    
+#单独保存原来的选择
+#用list保存原来的标签和选择
+
+#修改已经标注评论的选项
+#更新已评论数据中的数据
+#修改选项后要更新统计图中的数据
+#点击确认后要清空old_labeled_choice
+
+
+def labeled_select(v_choice,index,labeled_index,labeled_comment,old_labeled_choice):
+    print(labeled_comment[labeled_index[0]].comment_text)
+    labeled_comment[labeled_index[0]].label_list[index]['choice']=v_choice.get()
+    print(labeled_comment[labeled_index[0]].label_list)
+    
+   
+    for item in old_labeled_choice:
+        if item['tag']==labeled_comment[labeled_index[0]].label_list[index]['tag']:
+            item['new_choice']=v_choice.get()
+            
+    for item in old_labeled_choice:
+        print(item)
+      
+    
+    
+
+
+def labeled_label_choice(even,fm_choice,label_list,tag_all,labeled_index,labeled_comment,old_labeled_choice):
+    for widget in fm_choice.winfo_children():
+        widget.grid_forget()
+        
+    index=label_list.current()
+    i=1
+   
+    v_choice=IntVar()
+    v_choice.set(labeled_comment[labeled_index[0]].label_list[index]['choice'])
+    print("v:",v_choice.get())
+    print("当前评论默认选项:",labeled_comment[labeled_index[0]].label_list[index]['choice'])
+    
+    #根据标签选项生成按钮
+    for key in labeled_comment[labeled_index[0]].label_list[index]:
+        
+        if key!='tag'and key!='choice':
+           
+            b=Radiobutton(fm_choice,text=key,variable=v_choice,value=labeled_comment[labeled_index[0]].label_list[index][key],command=lambda:labeled_select(v_choice,index,labeled_index,labeled_comment,old_labeled_choice))
+           
+            b.grid(row=0,column=i)
+            i=i+1
+            
+def labeled_change_confirm(event,labeled_index,labeled_comment,data_list,old_labeled_choice):
+    
+    #更新统计图数据
+    for item in data_list:
+        for tmp in old_labeled_choice:
+            if item['tag']==tmp['tag']:
+                i=0
+                for key in item:
+                    if i==tmp['old_choice']:
+                        item[key]=str(int(item[key])-1)
+                    if i==tmp['new_choice']:
+                        item[key]=str(int(item[key])+1)
+                    i=i+1
+    
+    print('统计图数据')
+    for item in data_list:
+        print(item)
+    
+    #更新文件数据
+    f=open('statistics.json','w')
+    for item in data_list:
+         item=json.dumps(item,ensure_ascii=False)
+         f.writelines(item)
+         f.write('\n')
+    f.close()
+    
+    f=open('labeled_comment.json','w')
+    for item in labeled_comment:
+        tmp=labeled_comment[labeled_index[0]].__dict__
+        comment_tmp=json.dumps(tmp,ensure_ascii=False)
+        f.write(comment_tmp)
+        f.write('\n')
+    f.close()
+    
+#删除已标注评论(在xueqiu_comment和labeled_comment中删除)
+def labeled_comment_delete(fm_choice,comment_list,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice):
+    value=askokcancel('提示','确认删除?')
+    if value==True:
+         nxt_unlabeled_comment(fm_choice,labeled_index,labeled_comment,labeled_comment_text)
+         print("labeled_index:",labeled_index[0])
+         print("当前评论:",labeled_comment[labeled_index[0]].comment_text)
+         print("删除评论:",labeled_comment[labeled_index[0]-1].comment_text)
+        
+         #删除评论comment和comment_all
+        
+         
+         for index in range(0,len(comment_all)):
+             if comment_all[index].comment_text==labeled_comment[labeled_index[0]-1].comment_text:
+                 break;
+         #主界面评论没有被删除
+         print("index:",index)
+         
+         print("comment_all删除:",comment_all[index].comment_text)
+         print("listbox删除:",comment_list.get(index))
+         #判断listbox不为空
+         print("is_import_file:",is_import_file)
+         if is_import_file==True:
+             comment_list.delete(index)
+             del comment[index]
+        
+         del labeled_comment[labeled_index[0]-1]
+        
+         del comment_all[index]
+         
+         #更新xueqiu_comment
+         f=open('xueqiu_comment.json','w')
+         for item in comment_all:
+             tmp={}
+             item=item.__dict__
+             tmp['comment_text']=item['comment_text']
+             tmp['tag']=item['tag']
+             f.write(str(tmp))
+             f.write('\n')
+         f.close()
+         
+         #更新labeled_comment
+         f=open('labeled_comment.json','w')
+         for item in labeled_comment:
+             tmp={}
+             item=item.__dict__
+             comment_tmp=json.dumps(item,ensure_ascii=False)
+             f.write(comment_tmp)
+             f.write('\n')
+         f.close()
+         
+    
+
+def labeled_comment_f(comment_list,tag_all,labeled_comment):
+    labeled_comment_win=Tk()
+    
+    labeled_comment_win.geometry("500x470")
+    labeled_comment_win.title('已标注评论')
+    
+    labeled_menu=Menu(labeled_comment_win)
+  
+    labeled_menu.add_command(label='删除评论',command=lambda :labeled_comment_delete(fm_choice,comment_list,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice))
+    labeled_comment_win['menu']=labeled_menu
+    
+    #已标注评论下标,为什么类型是dict?
+    labeled_index=[]
+    labeled_index.append(0)
+   
+    
+    #初始化
+    old_labeled_choice=[]
+    
+    #判断labeled_comment是否为空
+    if len(labeled_comment)>0:
+        for i in range(0,len(labeled_comment[labeled_index[0]].label_list)):
+            tmp={}
+            for key in labeled_comment[labeled_index[0]].label_list[i]:
+                if key=='tag':
+                    tmp['tag']=labeled_comment[labeled_index[0]].label_list[i]['tag']
+                
+                if key=='choice':
+                    tmp['old_choice']=labeled_comment[labeled_index[0]].label_list[i]['choice']
+            old_labeled_choice.append(tmp)
+        
+  
+    
+    for item in old_labeled_choice:
+        print(item)
+    
+    tag_name=[]
+    for item in tag_all:
+        tag_name.append(item['tag'])
+    
+    fm_text=Frame(labeled_comment_win,width=500,height=200)
+   
+    fm_confirm=Frame(labeled_comment_win,width=500,height=35)
+    fm_page=Frame(labeled_comment_win,width=500,height=35)
+    fm_tag=Frame(labeled_comment_win,width=200,height=200)
+    fm_choice=Frame(labeled_comment_win,width=300,height=200)
+    
+    fm_text.place(x=0,y=0)
+    fm_tag.place(x=0,y=200)
+    fm_choice.place(x=200,y=200)
+    fm_confirm.place(x=0,y=400)
+    fm_page.place(x=0,y=435)
+    
+    labeled_comment_text=Text(fm_text,width=70,height=15)
+    labeled_comment_text.grid(row=0,column=0)
+    
+    labeled_comment_text.insert('end',str(labeled_comment[0].comment_text))
+    
+    #显示标签和评论信息
+    #在左侧的下拉框选择标签后，在右侧显示选项
+    label_list=ttk.Combobox(fm_tag,values=tag_name,state='readonly')
+    label_list.grid(row=0,column=0)
+    
+    #下拉框事件绑定
+    label_list.bind("<<ComboboxSelected>>",lambda even:labeled_label_choice(even,fm_choice,label_list,tag_all,labeled_index,labeled_comment,old_labeled_choice))
+    
+    #点击确认后将评论信息写入到已标注文件中，同时需要更新统计图中的选项对应的计数
+    tag_confirm_button=Button(fm_confirm,text='确认')
+    tag_confirm_button.place(x=230,y=0)
+    tag_confirm_button.bind('<Button-1>',lambda event:labeled_change_confirm(event,labeled_index,labeled_comment,data_list,old_labeled_choice))
+    
+    pre=Button(fm_page,text='上一条',command=lambda:labeled_pre_comment(fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice))
+    pre.place(x=5,y=0)
+    
+    nxt=Button(fm_page,text='下一条',command=lambda :labeled_nxt_comment(fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice))
+    nxt.place(x=450,y=0)
+    
+    
+    labeled_comment_win.mainloop()
+        
+           
 root=Tk()
 root.title("数据标注软件")
 root.geometry("800x450")
@@ -1035,13 +1270,13 @@ fmenu.add_command(label='保存',command=filesave)
 fmenu.add_command(label='另存为',command=filesaveas)
 
 dmenu=Menu(menubar)
-dmenu.add_command(label='下载',command=download)
+dmenu.add_command(label='下载',command=lambda:download(download_flag))
 dmenu.add_command(label='生成统计图',command=datachart)
 
 dmenu.add_command(label='添加标注')
 dmenu.add_command(label='删除评论',command=main_delete_multiple)
-dmenu.add_command(label='已标注评论',command=finished_comment)
-dmenu.add_command(label='未标注评论',command=unlabeled_comment)
+dmenu.add_command(label='已标注评论',command=lambda:labeled_comment_f(comment_list,tag_all,labeled_comment))
+dmenu.add_command(label='未标注评论',command=lambda:unlabeled_comment(comment_list))
 
 
 menubar.add_cascade(label='文件',menu=fmenu)
