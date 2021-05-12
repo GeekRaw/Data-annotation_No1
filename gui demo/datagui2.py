@@ -174,8 +174,8 @@ def is_download_stop(flag):
 
 #判断用户输入是否正确
 def is_stock_correct(stock_num,dwin,download_progress,flag):
-    if (len(stock_num)==8 and (re.match('SH600*', stock_num).span()!=None or re.match('SH601*', stock_num).span()!=None or re.match('SH603*', stock_num).span()!=None or re.match('SH605*', stock_num).span()!=None or re.match('SH688*', stock_num).span()!=None or re.match('SZ000*', stock_num).span()!=None or re.match('SZ001*', stock_num).span()!=None or re.match('SZ002*', stock_num).span()!=None or re.match('SZ300*', stock_num).span()!=None)):
-        download_start(stock_num.get(),dwin,download_progress,flag)
+    if (len(stock_num)==8 and (re.match('SH600*', stock_num)!=None or re.match('SH601*', stock_num)!=None or re.match('SH603*', stock_num)!=None or re.match('SH605*', stock_num)!=None or re.match('SH688*', stock_num)!=None or re.match('SZ000*', stock_num)!=None or re.match('SZ001*', stock_num)!=None or re.match('SZ002*', stock_num)!=None or re.match('SZ300*', stock_num)!=None)):
+        download_start(stock_num,dwin,download_progress,flag)
     else:
         messagebox.showinfo('提示','股票代码格式错误')
        
@@ -218,7 +218,7 @@ for item in data_list:
 
 def show_chart(event,canvas_chart,data_label,data_listbox):
     index=data_label.current()
-    
+   
     #清空画布重新绘图
     
     #统计标签选项总数
@@ -261,6 +261,7 @@ def datachart():
     cwin.title("统计图")
     cwin.geometry("500x500")
     
+    
     data_label=ttk.Combobox(cwin,values=data_label_name,state='readonly')
     
     #下拉框事件绑定
@@ -276,6 +277,7 @@ def datachart():
     data_listbox=Listbox(cwin,width=30)
     data_listbox.place(x=150,y=310)
     
+   
     cwin.mainloop()
     
 #在标签管理界面中删除标签
@@ -361,6 +363,9 @@ def create_confirm(event,choice_index,tag_tmp,new_label,data_label,tag_all,input
     #要先将统计数据中是选项计数清零，加入新的标签后再写回文件中
    
     data_list.append(new_label)
+    print('data_list加入新标签:',new_label)
+    
+    data_label_name.append(new_label['tag'])
     
     
     f=open('statistics.json','w')
