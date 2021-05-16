@@ -96,7 +96,7 @@ class Xueqiuspider:
             #保存为文件名xueqiu_comment的文件
             print(content)
             
-            with open('xueqiu_comment3.json', 'a')as f:
+            with open('xueqiu_comment.json', 'a')as f:
                 f.write(str(content).encode("gbk", 'ignore').decode("gbk", "ignore"))
                 f.write("\n")
             
