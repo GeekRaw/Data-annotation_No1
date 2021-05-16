@@ -216,6 +216,7 @@ data_label_name=[]
 for item in data_list:
     data_label_name.append(item['tag'])
 
+
 def show_chart(event,canvas_chart,data_label,data_listbox):
     index=data_label.current()
    
@@ -252,10 +253,14 @@ def show_chart(event,canvas_chart,data_label,data_listbox):
                     canvas_chart.create_oval(250,250,50,50,fill=data_color[i])
                     break
                 i=i+1
-    
+            else:
+                canvas_chart.create_oval(250,250,50,50,fill='grey')
+                data_tmp=key+' '+'选项数量 '+'0'
+                data_listbox.insert(END,data_tmp)
     
     
 #data_label是下拉框，在下拉框中选择标签后生成统计图和相关信息  
+#添加菜单栏，在菜单栏中添加删除功能，点击后弹出listbox，显示统计图中的标签，可以批量删除对应的标签统计数据
 def datachart():
     cwin=Tk()
     cwin.title("统计图")
@@ -281,7 +286,10 @@ def datachart():
     cwin.mainloop()
     
 #在标签管理界面中删除标签
-#同时也要删除统计数据中的对应标签
+
+
+
+
 def tag_delete(tag_listbox):
     tmp_tag=tag_listbox.curselection()
     tag_index=list(tmp_tag)
@@ -291,6 +299,7 @@ def tag_delete(tag_listbox):
     value=askokcancel('提示','确认删除?')
     if value==True:
         for item in tag_index:
+          
             tag_listbox.delete(item)
             del tag_all[item]
         #将更新后的标签信息覆写回文件中    
@@ -314,6 +323,7 @@ def tag_delete(tag_listbox):
 
 
 #添加标签名
+#tag_name保存标签名
 def tag_name_confirm(entag,tag_tmp,data_label):
     
     tag_tmp['tag']=entag.get()
@@ -322,6 +332,7 @@ def tag_name_confirm(entag,tag_tmp,data_label):
     
 
 #确认选项名
+#tag_tmp保存标签选项
 def tag_choice_confirm(enchoice,choicelist,tag_tmp,data_label,choice_index):
     choicelist.insert("end",enchoice.get())
     #将添加的选项添加到tag_tmp字典中
@@ -346,43 +357,52 @@ def choice_delete(even,choice,tag_tmp):
 #将新建的标签信息，写入到文件中
 #添加选项的默认选择值choice=0
 #新建标签信息添加到统计图文件中
+#判断用户是否输入了标签名信息和选项信息
+#new_label保存统计图格式的标签数据
 def create_confirm(event,choice_index,tag_tmp,new_label,data_label,tag_all,input_tag,choice_list,tag_listbox):
-    tag_tmp['choice']=0
-    tag_all.append(tag_tmp)
-    tag_listbox.insert('end',tag_tmp['tag'])
-    #choice_list.insert('end', tag_tmp['tag'])
-    f=open("tag.json","a")
-    #确认后将新的标签信息写回到listbox中
+    #如何判断键是否存在
+    if 'tag'in tag_tmp and len(tag_tmp)>2:
+        tag_tmp['choice']=0
+        tag_all.append(tag_tmp)
+        tag_listbox.insert('end',tag_tmp['tag'])
+        #choice_list.insert('end', tag_tmp['tag'])
+        f=open("tag.json","a")
+        #确认后将新的标签信息写回到listbox中
     
-    tag_tmp=json.dumps(tag_tmp,ensure_ascii=False)
-    f.writelines(tag_tmp)
-    f.write('\n')
-    f.close()
-    
-    #将标签写入到统计数据中
-    #要先将统计数据中是选项计数清零，加入新的标签后再写回文件中
-   
-    data_list.append(new_label)
-    print('data_list加入新标签:',new_label)
-    
-    data_label_name.append(new_label['tag'])
-    
-    
-    f=open('statistics.json','w')
-    for item in data_list:
-        print(item)
-        item=json.dumps(item,ensure_ascii=False)
-        f.writelines(item)
+        tag_tmp=json.dumps(tag_tmp,ensure_ascii=False)
+        f.writelines(tag_tmp)
         f.write('\n')
-    f.close()
+        f.close()
+    
+        #将标签写入到统计数据中
+        #要先将统计数据中是选项计数清零，加入新的标签后再写回文件中
    
-    messagebox.showinfo('提示','创建成功')
+        data_list.append(new_label)
+        print('data_list加入新标签:',new_label)
     
-    #清空标签输入界面和显示选项的listbox
-    input_tag.delete(0,END)
-    choice_list.delete(0,END)
-    choice_index[0]=1
+        data_label_name.append(new_label['tag'])
     
+    
+        f=open('statistics.json','w')
+        for item in data_list:
+            print(item)
+            item=json.dumps(item,ensure_ascii=False)
+            f.writelines(item)
+            f.write('\n')
+        f.close()
+   
+        messagebox.showinfo('提示','创建成功')
+    
+        #清空标签输入界面和显示选项的listbox
+        input_tag.delete(0,END)
+        choice_list.delete(0,END)
+        choice_index[0]=1
+    else:
+        messagebox.showinfo('提示','标签名/选项不能为空')
+        input_tag.delete(0,END)
+        choice_list.delete(0,END)
+        choice_index[0]=1
+        
     
     
     
