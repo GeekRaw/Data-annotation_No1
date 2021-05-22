@@ -1329,6 +1329,7 @@ def check_import(check_list):
         for line in f.readlines():
             comment_dict=ast.literal_eval(line)
             check_tmp.append(comment_dict)
+        f.close()
         
         #深拷贝
         check_list.append(copy.deepcopy(check_tmp))
@@ -1349,7 +1350,7 @@ def check_diff(check_list,diff_index,check_comment_list):
     else:
         #遍历导入的所有文件中的数据
         for i in range(1,len(check_list)):
-            print("check_list[i]长度:",len(check_list[i]))
+           
             
             check_index=min(len(check_list[0]),len(check_list[i]))
             #遍历check_list[0]中的所有评论
@@ -1370,6 +1371,7 @@ def check_diff(check_list,diff_index,check_comment_list):
                
         if len(diff_index)==0:
             messagebox.showinfo('提示','检查通过')
+            check_list.clear()
 
 #核查的下一条数据
 #修改curr_diff_index
