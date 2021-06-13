@@ -8,6 +8,7 @@ from tkinter import*
 from tkinter import ttk
 from tkinter.filedialog import*
 import tkinter
+
 from tkinter.messagebox import askokcancel,showinfo,WARNING
 import ast
 import logging
@@ -59,6 +60,9 @@ else:
 #comment_all从xueqiu_comment文件中读取数据，存放所有的评论信息(评论,标签，标志位)
 #comment_all存放stock结构体
 comment_all=[]
+
+#存放核查文件数据
+check_comment_diff={}
 
 if os.path.exists('xueqiu_comment.json')==False:
     f=open('xueqiu_comment.json','w')
@@ -131,10 +135,11 @@ else:
         labeled_comment.append(tmp)
     f.close()
     
-    
+#保存筛选出的不相同的核查数据
+check_diff_save=[]    
     
 #文件导入
-def importfile(lb):
+def importfile(lb,root):
     
     global filename
     global is_import_file
@@ -158,17 +163,25 @@ def importfile(lb):
         
         f.close()
         is_import_file=True
+        root_title=str("数据标注软件   当前打开文件  "+str(filename))
+        
+        root.title(root_title)
         
     return filename
         
     
 #下载管理
-def download_start(stock_num,dwin,download_progress,flag):
+def download_start(start_download,stock_num,dwin,download_progress,flag):
+     download_progress['value']=0
+     dwin.update()
+     start_download['state']=DISABLED
      xueqiu = Xueqiuspider()
-     t=threading.Thread(target=xueqiu.run(stock_num,dwin,download_progress,flag),name='t')
+     t=threading.Thread(target=xueqiu.run(start_download,stock_num,dwin,download_progress,flag),name='t')
      t.start()
+     
 
-def download_stop(flag):
+def download_stop(start_download,flag):
+    start_download['state']=NORMAL
     t=threading.Thread(target=is_download_stop(flag),name='t2')
     t.start()
 
@@ -177,11 +190,11 @@ def is_download_stop(flag):
     print('停止下载')
 
 #判断用户输入是否正确
-def is_stock_correct(stock_num,dwin,download_progress,flag):
+def is_stock_correct(start_download,stock_num,dwin,download_progress,flag):
     if (len(stock_num)==8 and (re.match('SH600*', stock_num)!=None or re.match('SH601*', stock_num)!=None or re.match('SH603*', stock_num)!=None or re.match('SH605*', stock_num)!=None or re.match('SH688*', stock_num)!=None or re.match('SZ000*', stock_num)!=None or re.match('SZ001*', stock_num)!=None or re.match('SZ002*', stock_num)!=None or re.match('SZ300*', stock_num)!=None)):
-        download_start(stock_num,dwin,download_progress,flag)
+        download_start(start_download,stock_num,dwin,download_progress,flag)
     else:
-        messagebox.showinfo('提示','股票代码格式错误')
+        tkinter.messagebox.showinfo('提示','股票代码格式错误')
        
         
         
@@ -197,9 +210,9 @@ def download(flag):
     label_download.place(x=40,y=10)
     stock_num.place(x=100,y=10)
     #start_download=Button(dwin,text="开始下载",command=lambda:download_start(stock_num.get(),dwin,download_progress,flag))
-    start_download=Button(dwin,text='开始下载',command=lambda:is_stock_correct(stock_num.get(),dwin,download_progress,flag))
+    start_download=Button(dwin,text='开始下载',command=lambda:is_stock_correct(start_download,stock_num.get(),dwin,download_progress,flag))
     start_download.place(x=50,y=100)
-    stop_download=Button(dwin,text="停止下载",command=lambda:download_stop(download_flag))
+    stop_download=Button(dwin,text="停止下载",command=lambda:download_stop(start_download,download_flag))
     stop_download.place(x=300,y=100)
     
     download_progress=ttk.Progressbar(dwin,length=200,mode="determinate",orient=HORIZONTAL)
@@ -329,11 +342,16 @@ def tag_delete(tag_listbox):
 #添加标签名
 #tag_name保存标签名
 def tag_name_confirm(entag,tag_tmp,data_label):
+    tag_flag=0
+    for item in tag_all:
+        if item['tag']==entag.get():
+            tag_flag=1
+            tkinter.messagebox.showinfo('提示','存在相同标签')
    
-    
-    tag_tmp['tag']=entag.get()
-    data_label['tag']=entag.get()
-    print(tag_tmp['tag'])
+    if tag_flag==0:
+        tag_tmp['tag']=entag.get()
+        data_label['tag']=entag.get()
+        print(tag_tmp['tag'])
     
 
 #确认选项名
@@ -381,7 +399,14 @@ def create_confirm(event,choice_index,tag_tmp,new_label,data_label,tag_all,input
     if 'tag'in tag_tmp and len(tag_tmp)>2:
         tag_tmp['choice']=0
         tag_all.append(copy.deepcopy(tag_tmp))
-        tag_listbox.insert('end',tag_tmp['tag'])
+        new_tag=""
+        for item in tag_tmp:
+            if item=='tag':
+                new_tag=tag_tmp[item]+"  选项: "
+            if item!='tag' and item!='choice':
+                new_tag+=item+"  "
+                
+        tag_listbox.insert('end',new_tag)
         #choice_list.insert('end', tag_tmp['tag'])
         f=open("tag.json","a")
         #确认后将新的标签信息写回到listbox中
@@ -408,7 +433,7 @@ def create_confirm(event,choice_index,tag_tmp,new_label,data_label,tag_all,input
             f.write('\n')
         f.close()
    
-        messagebox.showinfo('提示','创建成功')
+        tkinter.messagebox.showinfo('提示','创建成功')
     
         #清空标签输入界面和显示选项的listbox
         input_tag.delete(0,END)
@@ -419,7 +444,7 @@ def create_confirm(event,choice_index,tag_tmp,new_label,data_label,tag_all,input
         
         choice_index[0]=1
     else:
-        messagebox.showinfo('提示','标签名/选项不能为空')
+        tkinter.messagebox.showinfo('提示','标签名/选项不能为空')
         input_tag.delete(0,END)
         choice_list.delete(0,END)
        
@@ -521,8 +546,17 @@ def tag():
     #滚动条动，列表跟着滚动
     main_tag_sc.config(command=tag_listbox.yview)
     
+    #for item in tag_all:
+        #tag_listbox.insert("end",item['tag'])
+    
     for item in tag_all:
-        tag_listbox.insert("end",item['tag'])
+        new_tag=""
+        for it in item:
+            if it=='tag':
+                new_tag=item[it]+"  选项: "
+            if it!='tag' and it!='choice':
+                new_tag+=it+" "
+        tag_listbox.insert("end",new_tag)
         
     menubar=Menu(tag_win)
     
@@ -546,7 +580,7 @@ def pre_comment(even,text):
    
     if comment_detail_index<0:
         comment_detail_index=0
-        messagebox.showinfo('提示','已经是第一条评论了')
+        tkinter.messagebox.showinfo('提示','已经是第一条评论了')
     #清空text原有内容
     text.delete('1.0','end')
     #读入新的内容
@@ -561,9 +595,11 @@ def nex_comment(even,text):
     
     if comment_detail_index>=len(comment):
        comment_detail_index=len(comment)-1;
-       messagebox.showinfo('提示','已经是最后一条评论了')
+       tkinter.messagebox.showinfo('提示','已经是最后一条评论了')
     text.delete('1.0','end')
     text.insert('end',comment[comment_detail_index])
+    
+    #显示选项
 
 
     
@@ -691,36 +727,51 @@ def comment_detail(even):
 
 #查看上一条未来标注评论
 #标签和按钮重新布局
-def pre_unlabeled_comment(fm_choice,unlabeled_index,unlabeled_comment_list,text):
+def pre_unlabeled_comment(label_list,tag_all,fm_choice,unlabeled_index,unlabeled_comment_list,text):
     for widget in fm_choice.winfo_children():
         widget.grid_forget()
     
-     
+    
     unlabeled_index[0]=unlabeled_index[0]-1
     print("评论下标",unlabeled_index[0])
+    
+    
     if unlabeled_index[0]<0:
         unlabeled_index[0]=0
-        messagebox.showinfo('提示','已经是第一条评论了')
+        tkinter.messagebox.showinfo('提示','已经是第一条评论了')
     text.delete('1.0','end')
     text.insert('end',unlabeled_comment_list[unlabeled_index[0]].comment_text)
+    
+    #设置默认显示
+    label_list.current(0)
+    even='<Button-1>'
+    label_choice(even, fm_choice, label_list, tag_all, unlabeled_index, unlabeled_comment_list)
         
 #查看下一条未标注评论
 #标签和按钮重新布局
 
 
-def nxt_unlabeled_comment(fm_choice,unlabeled_index,unlabeled_comment_list,text):
+def nxt_unlabeled_comment(label_list,tag_all,fm_choice,unlabeled_index,unlabeled_comment_list,text):
     for widget in fm_choice.winfo_children():
         widget.grid_forget()
     
    
     unlabeled_index[0]=unlabeled_index[0]+1
     print("评论下标:",unlabeled_index[0])
+    
+   
+    
     if unlabeled_index[0]>=len(unlabeled_comment_list):
         unlabeled_index[0]=len(unlabeled_comment_list)-1
-        messagebox.showinfo('提示','已经是最后一条评论了')
+        tkinter.messagebox.showinfo('提示','已经是最后一条评论了')
     
     text.delete('1.0','end')
     text.insert('end',unlabeled_comment_list[unlabeled_index[0]].comment_text)
+    
+    #设置默认显示
+    label_list.current(0)
+    even='<Button-1>'
+    label_choice(even, fm_choice, label_list, tag_all, unlabeled_index, unlabeled_comment_list)
 
 #记录对选项的选择
 #传入一个stock结构体，记录当前的选择
@@ -900,6 +951,20 @@ def unlabeled_comment(comment_list):
     #从comment_all中选出tag=0的评论
     #问题读入的长度为空
     #这个可以放到外面，程序运行时就读取
+    #更新一次comment_all
+    comment_all.clear()
+    f=open('xueqiu_comment.json','r')
+    for line in f.readlines():
+        comment_dict=ast.literal_eval(line)
+    
+        tmp=stock()
+        tmp.comment_text=comment_dict['comment_text']
+        for item in tag_all:
+            tmp.label_list.append(item)
+        tmp.tag=comment_dict['tag']
+        comment_all.append(tmp)
+    f.close()
+    
     unlabeled_comment_list=[]
     for item in comment_all:
         if item.tag=='0':
@@ -944,32 +1009,43 @@ def unlabeled_comment(comment_list):
     #下拉框事件绑定
     label_list.bind("<<ComboboxSelected>>",lambda even:label_choice(even,fm_choice,label_list,tag_all,unlabeled_index,unlabeled_comment_list))
     
+    label_list.current(0)
+    even='<Button-1>'
+    label_choice(even, fm_choice, label_list, tag_all, unlabeled_index, unlabeled_comment_list)
+    
     #点击确认后将评论信息写入到已标注文件中，同时需要更新统计图中的选项对应的计数
     tag_confirm_button=Button(fm_confirm,text='确认')
     tag_confirm_button.place(x=230,y=0)
     tag_confirm_button.bind('<Button-1>',lambda event:b_confirm(event,unlabeled_index,unlabeled_comment_list,data_list,labeled_comment))
     
-    pre=Button(fm_page,text='上一条',command=lambda:pre_unlabeled_comment(fm_choice,unlabeled_index,unlabeled_comment_list,unlabeled_comment_text))
+    pre=Button(fm_page,text='上一条',command=lambda:pre_unlabeled_comment(label_list,tag_all,fm_choice,unlabeled_index,unlabeled_comment_list,unlabeled_comment_text))
     pre.place(x=5,y=0)
     
-    nxt=Button(fm_page,text='下一条',command=lambda :nxt_unlabeled_comment(fm_choice,unlabeled_index,unlabeled_comment_list,unlabeled_comment_text))
+    nxt=Button(fm_page,text='下一条',command=lambda :nxt_unlabeled_comment(label_list,tag_all,fm_choice,unlabeled_index,unlabeled_comment_list,unlabeled_comment_text))
     nxt.place(x=450,y=0)
     
     
     unlabeled_comment_win.mainloop()
 
 #更新评论同时更新old_labeled_choice
-def labeled_nxt_comment(fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice):
+def labeled_nxt_comment(labeled_label_list,tag_all,fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice):
     for widget in fm_choice.winfo_children():
         widget.grid_forget()
     
     labeled_index[0]=labeled_index[0]+1
+    
+  
+    
     if labeled_index[0]>=len(labeled_comment):
         labeled_index[0]=len(labeled_comment)-1
-        messagebox.showinfo('提示','已经是最后一条评论了')
+        tkinter.messagebox.showinfo('提示','已经是最后一条评论了')
     
     labeled_comment_text.delete('1.0','end')
     labeled_comment_text.insert('end',labeled_comment[labeled_index[0]].comment_text)
+    
+    labeled_label_list.current(0)
+    even='<Button-1>'
+    labeled_label_choice(even, fm_choice, labeled_label_list, tag_all, labeled_index, labeled_comment, old_labeled_choice)
     
     #更新选项记录
     old_labeled_choice=[]
@@ -989,17 +1065,22 @@ def labeled_nxt_comment(fm_choice,labeled_index,labeled_comment,labeled_comment_
         print("old_labeled_choice",item)
             
 
-def labeled_pre_comment(fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice):
+def labeled_pre_comment(labeled_label_list,tag_all,fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice):
     for widget in fm_choice.winfo_children():
         widget.grid_forget()
     
     labeled_index[0]=labeled_index[0]-1
     if labeled_index[0]<0:
         labeled_index[0]=0
-        messagebox.showinfo('提示','已经是第一条评论了')
+        tkinter.messagebox.showinfo('提示','已经是第一条评论了')
     
     labeled_comment_text.delete('1.0','end')
     labeled_comment_text.insert('end',labeled_comment[labeled_index[0]].comment_text)
+    
+    #设置默认显示
+    labeled_label_list.current(0)
+    even='<Button-1>'
+    labeled_label_choice(even, fm_choice, labeled_label_list, tag_all, labeled_index, labeled_comment, old_labeled_choice)
     
     #更新选项记录
     old_labeled_choice=[]
@@ -1278,15 +1359,20 @@ def labeled_comment_f(comment_list,tag_all,labeled_comment):
     #下拉框事件绑定
     labeled_label_list.bind("<<ComboboxSelected>>",lambda even:labeled_label_choice(even,labeled_fm_choice,labeled_label_list,tag_all,labeled_index,labeled_comment,old_labeled_choice))
     
+    #设置默认显示
+    labeled_label_list.current(0)
+    even='<Button-1>'
+    labeled_label_choice(even, labeled_fm_choice, labeled_label_list, tag_all, labeled_index, labeled_comment, old_labeled_choice)
+    
     #点击确认后将评论信息写入到已标注文件中，同时需要更新统计图中的选项对应的计数
     tag_confirm_button=Button(fm_confirm,text='确认')
     tag_confirm_button.place(x=230,y=0)
     tag_confirm_button.bind('<Button-1>',lambda event:labeled_change_confirm(event,labeled_index,labeled_comment,data_list,old_labeled_choice))
     
-    pre=Button(fm_page,text='上一条',command=lambda:labeled_pre_comment(labeled_fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice))
+    pre=Button(fm_page,text='上一条',command=lambda:labeled_pre_comment(labeled_label_list,tag_all,labeled_fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice))
     pre.place(x=5,y=0)
     
-    nxt=Button(fm_page,text='下一条',command=lambda :labeled_nxt_comment(labeled_fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice))
+    nxt=Button(fm_page,text='下一条',command=lambda :labeled_nxt_comment(labeled_label_list,tag_all,labeled_fm_choice,labeled_index,labeled_comment,labeled_comment_text,old_labeled_choice))
     nxt.place(x=450,y=0)
     
     
@@ -1306,6 +1392,7 @@ def labeled_comment_saveas(labeled_comment):
          
          comment_new=copy.deepcopy(item)
          comment_new=comment_new.__dict__
+         #comment_new=json.dumps(comment_new,ensure_ascii=False)
          comment_new=json.dumps(comment_new,ensure_ascii=False)
          
          #fh.write(str(comment_new))
@@ -1315,6 +1402,19 @@ def labeled_comment_saveas(labeled_comment):
     fh.close()
     
     
+    #导出后tag没有正常清0
+    comment_all.clear()
+    f=open('xueqiu_comment.json','r')
+    for line in f.readlines():
+        comment_dict=ast.literal_eval(line)
+    
+        tmp=stock()
+        tmp.comment_text=comment_dict['comment_text']
+        for item in tag_all:
+            tmp.label_list.append(item)
+        tmp.tag=comment_dict['tag']
+        comment_all.append(tmp)
+    f.close()
     
     fh_xueqiu=open('xueqiu_comment.json',"w")
     for item in comment_all:
@@ -1388,12 +1488,19 @@ def check_import(check_list):
         for line in f.readlines():
             comment_dict=ast.literal_eval(line)
             comment_dict['username']=copy.deepcopy(f_check_pre)
+            #设置标志位判断评论是否被核查
+            comment_dict['cflag']=0
+            #存放不同标注者的选择
+            comment_dict['check_comment']=[]
             #print(comment_dict)
             check_tmp.append(comment_dict)
         f.close()
         
         #深拷贝
         check_list.append(copy.deepcopy(check_tmp))
+        print("check_list len:",len(check_list))
+        
+        
         #正常导入
        
         check_tmp.clear()
@@ -1409,8 +1516,13 @@ diff_index=[]
 #不在check[0]上做修改
 #check_choice_diff用来存放选择不同的评论
 def check_diff(check_list,diff_index,check_comment_list,check_comment_diff):
+    for item in check_list[0]:
+        print(item)
+        print('\n')
+        
+    first_index_diff=[]
     if len(check_list)<=1:
-        messagebox.showinfo('提示','请导入至少2个文件')
+        tkinter.messagebox.showinfo('提示','请导入至少2个文件')
     else:
         #遍历导入的所有文件中的数据
         #初始化check_comment_diff
@@ -1432,60 +1544,123 @@ def check_diff(check_list,diff_index,check_comment_list,check_comment_diff):
                 for other_index in range(0,check_index):
                     if check_list[0][curr_index]['comment_text']==check_list[i][other_index]['comment_text']:
                         #遍历所有标签的选择
+                          first_index_diff.append(curr_index)
                           for index_label in range(0,len(check_list[0][curr_index]['label_list'])):
                     
                               if check_list[0][curr_index]['label_list'][index_label]['choice']!=check_list[i][other_index]['label_list'][index_label]['choice']:
-                                  
+                                  check_list[0][curr_index]['cflag']=1
+                                  #将选项信息拼接成一个字符串插入到check_comment中
+                                  check_message={}
+                                  check_message['username']=check_list[i][other_index]['username']
+                                  check_message['label_list']=[]
+                                  label_message=""
+                                  choice_message=""
+                                  for k in range(0,len(check_list[i][other_index]['label_list'])):
+                                      label_message=""
+                                      choice_message=""
+                                      for key in check_list[i][other_index]['label_list'][k]:
+                                          if key=='tag':
+                                              label_message="标签名: "+str(check_list[i][other_index]['label_list'][k][key])
+                                              label_message+="选项"
+                                          if key!='choice' and key!='tag':
+                                              label_message+=key+" "
+                                              
+                                              if check_list[i][other_index]['label_list'][k][key]==check_list[i][other_index]['label_list'][k]['choice']:
+                                                  choice_message=key
+                                         
+                                      label_message+="选择: "+choice_message
+                                      check_message['label_list'].append(copy.deepcopy(label_message))
+                                 
+                                  check_list[0][curr_index]['check_comment'].append(copy.deepcopy(check_message))
+                                  print(check_list[0][curr_index])
+                                  print('\n')
                                   diff_index.append(curr_index)
                                   check_comment_list.insert("end", check_list[0][curr_index]['comment_text'])
                                   check_comment_diff[check_list[0][curr_index]['comment_text']].append(check_list[i][other_index])
                                   break
+        for item in first_index_diff:
+            check_message={}
+            check_message['username']=check_list[0][0]['username']
+            check_message['label_list']=[]
+           
+            for k in range(0,len(check_list[0][item]['label_list'])):
+                label_message=""
+                choice_message=""
+                for key in check_list[0][item]['label_list'][k]:
+                    if key=='tag':
+                        label_message="标签名: "+str(check_list[0][item]['label_list'][k][key])
+                        label_message+="选项"
+                    if key!='choice' and key!='tag':
+                        label_message+=key+" "
+                        
+                        if check_list[0][item]['label_list'][k][key]==check_list[0][item]['label_list'][k]['choice']:
+                            choice_message=key
+                label_message+="选择: "+choice_message
+                check_message['label_list'].append(copy.deepcopy(label_message))
+            check_list[0][item]['check_comment'].append(copy.deepcopy(check_message))
+        
+        #check_
+       
+            
+        for item in check_list[0]:
+            check_diff_save.append(copy.deepcopy(item))
+        
+        
+                         
                                   
                                   
-                                  
-                                  
-                
 
                
         if len(diff_index)==0:
-            messagebox.showinfo('提示','检查通过')
+            tkinter.messagebox.showinfo('提示','检查通过')
             check_list.clear()
         
         #显示check_comment_diff
         #正确读入
-        for item in check_comment_diff:
-            print(check_comment_diff[item])
+        #for item in check_comment_diff:
+            #print(check_comment_diff[item])
 
 #核查的下一条数据
 #修改curr_diff_index
 #index当前标签下标
-def check_nxt(check_choice,curr_diff_index,diff_index,check_list,check_comment_text,check_comment_diff):
+def check_nxt(check_label_list,check_choice,curr_diff_index,diff_index,check_list,check_comment_text,check_comment_diff):
     for widget in check_choice.winfo_children():
         widget.grid_forget()
     
     curr_diff_index[0]+=1
     if curr_diff_index[0]>=len(diff_index):
         curr_diff_index=len(diff_index)-1
-        messagebox.showinfo('提示','已是最后一条')
+        tkinter.messagebox.showinfo('提示','已是最后一条')
     
     check_comment_text.delete('1.0','end')
     #check_comment_text.insert('end',check_list[0][diff_index[curr_diff_index[0]]]['comment_text'])
+    
+    check_label_list.current(0)
+    even='<Button-1>'
+    check_label_choice(even, check_choice, check_label_list, check_list, curr_diff_index, diff_index)
+    
     show_check_detail(curr_diff_index, diff_index, check_list, check_comment_text,check_comment_diff)
     
         
 #核查的上一条数据
-def check_pre(check_choice,curr_diff_index,diff_index,check_list,check_comment_text,check_comment_diff):
+def check_pre(check_label_list,check_choice,curr_diff_index,diff_index,check_list,check_comment_text,check_comment_diff):
     for widget in check_choice.winfo_children():
         widget.grid_forget()
     
     curr_diff_index[0]-=1
     if curr_diff_index[0]<0:
         curr_diff_index=0
-        messagebox.showinfo('提示','已经是第一条')
+        tkinter.messagebox.showinfo('提示','已经是第一条')
     
     check_comment_text.delete('1.0','end')
     #check_comment_text.insert('end',check_list[0][diff_index[curr_diff_index[0]]]['comment_text'])
+    check_label_list.current(0)
+    even='<Button-1>'
+    check_label_choice(even, check_choice, check_label_list, check_list, curr_diff_index, diff_index)
+    
     show_check_detail(curr_diff_index, diff_index, check_list, check_comment_text,check_comment_diff)
+    
+    #设置默认标签和选项
     
     
 
@@ -1536,10 +1711,17 @@ def check_label_choice(even,check_choice,check_label_list,check_list,curr_diff_i
  #导出核查后文件
 def check_saveas(check_list,check_comment_list,check_comment_diff):
     f=asksaveasfilename(initialfile="未命名.json",defaultextension=".json")
+    
+    #去除用户名
     f_check=open(f,'w')
     for item in check_list[0]:
-        item=json.dumps(item,ensure_ascii=False)
-        f_check.write(item)
+        it_tmp={}
+        for it in item:
+            if it!='username':
+                it_tmp[it]=item[it]
+                
+        it_tmp=json.dumps(it_tmp,ensure_ascii=False)
+        f_check.write(it_tmp)
         f_check.write('\n')
     f_check.close()
     
@@ -1623,8 +1805,11 @@ def check_change(even,check_comment_list,check_comment_diff):
             if item==check_list[0][diff_index[curr_diff_index[0]]]['comment_text']:
                 check_comment_text.insert('end','\n')
                 for i in range(0,len(check_comment_diff[item])):
+                   
+                    
                     check_comment_text.insert('end',str(check_comment_diff[item][i]['username']))
                     check_comment_text.insert('end','\n')
+                    
                     #check_comment_text.insert('end',str(check_comment_diff[item][i]['label_list']))
                     label_message=""
                     choice_message=""
@@ -1641,10 +1826,13 @@ def check_change(even,check_comment_list,check_comment_diff):
                         label_message+="选择: "+choice_message
                         check_comment_text.insert('end',str(label_message))
                         check_comment_text.insert('end','\n')
-                            
+                        
                     
                     check_comment_text.insert('end','\n')
+                   
         check_comment_text.insert('end','\n')
+        
+        
         
     
     #下拉框的标签选项
@@ -1661,16 +1849,73 @@ def check_change(even,check_comment_list,check_comment_diff):
     #绑定下拉框事件
     check_label_list.bind("<<ComboboxSelected>>",lambda even:check_label_choice(even, check_choice, check_label_list, check_list, curr_diff_index, diff_index))
     
-    pre=Button(check_page,text='上一条',command=lambda:check_pre(check_choice,curr_diff_index,diff_index,check_list,check_comment_text,check_comment_diff))
+    pre=Button(check_page,text='上一条',command=lambda:check_pre(check_label_list,check_choice,curr_diff_index,diff_index,check_list,check_comment_text,check_comment_diff))
     pre.place(x=5,y=0)
     
-    nxt=Button(check_page,text='下一条',command=lambda:check_nxt(check_choice,curr_diff_index,diff_index,check_list,check_comment_text,check_comment_diff))
+    nxt=Button(check_page,text='下一条',command=lambda:check_nxt(check_label_list,check_choice,curr_diff_index,diff_index,check_list,check_comment_text,check_comment_diff))
     nxt.place(x=450,y=0)
+    
+    check_button_confirm=Button(check_page,text='确认',command=lambda: check_b_confirm(curr_diff_index,diff_index,check_diff_save))
+    check_button_confirm.place(x=230,y=0)
+    
+    check_label_list.current(0)
+    even='<Button-1>'
+    check_label_choice(even, check_choice, check_label_list, check_list, curr_diff_index, diff_index)
     
     
     check_change_win.mainloop()
     
+#确认修改待核查评论
+def check_b_confirm(curr_diff_index,diff_index,check_diff_save):
+    #check_list[0][diff_index[curr_diff_index[0]]]['cflag']=2
+    check_diff_save[diff_index[curr_diff_index[0]]]['cflag']=2
+   
     
+#导出没有核查完的文件
+def check_unfinished_save(check_diff_save):
+    f=asksaveasfilename(initialfile='未命名.json',defaultextension='.json')
+    f_unfinished=open(f,'w')
+    
+    for item in check_diff_save:
+        item=json.dumps(item, ensure_ascii=False)
+        f_unfinished.write(item)
+        f_unfinished.write('\n')
+    f_unfinished.close() 
+    
+    check_diff_save.clear()       
+
+
+#保存待核查的下标
+check_unfinished_index=[]
+#导入未完成核查的文件
+#导入未核查的评论(cflag=1)
+#check_diff_save相当于二维list
+def check_unfinshed_import(check_diff_save,check_unfinished_list):
+    check_diff_save.clear()
+    f=askopenfilename(defaultextension=".json")
+    f_import=open(f,'r')
+   
+    for line in f_import.readlines():
+        #comment_dict类型是list
+        comment_dict=ast.literal_eval(line)
+        
+        check_diff_save.append(copy.deepcopy(comment_dict))
+        
+        #选出还未被核查的评论
+       
+        
+    f_import.close()
+    
+    for i in range(0,len(check_diff_save)):
+        if check_diff_save[i]['cflag']==1:
+            check_unfinished_index.append(i)
+            check_unfinished_list.insert("end",check_diff_save[i]['comment_text'])
+            
+    
+
+    
+    
+   
         
 #核查模块
 def check():
@@ -1680,10 +1925,14 @@ def check():
     menubar=Menu(check_win)
     #存放所有导入文件中选择不同的评论
     #核查完成后需要清空
-    check_comment_diff={}
+   
+    check_comment_diff.clear()
+    check_list.clear()
     menubar.add_command(label='导入核查文件',command=lambda:check_import(check_list))
     menubar.add_command(label='核查',command=lambda:check_diff(check_list,diff_index,check_comment_list,check_comment_diff))
     menubar.add_command(label='导出文件',command=lambda:check_saveas(check_list,check_comment_list,check_comment_diff))
+    menubar.add_command(label='保存',command=lambda:check_unfinished_save(check_diff_save))
+    
     check_win['menu']=menubar
     
     
@@ -1704,6 +1953,202 @@ def check():
     check_comment_list.bind("<Double-Button-1>",lambda even: check_change(even,check_comment_list,check_comment_diff))
     
     check_win=mainloop()
+
+
+def unfinished_show(check_unfinished_text,curr_unfinished_index,check_unfinished_index,check_diff_save):
+    check_unfinished_text.insert('end',check_diff_save[check_unfinished_index[curr_unfinished_index[0]]]['comment_text'])
+    check_unfinished_text.insert('end','\n')
+    check_unfinished_text.insert('end','\n')
+    
+    for item in check_diff_save[check_unfinished_index[curr_unfinished_index[0]]]['check_comment']:
+            for key in item:
+                if key=='username':
+                    check_unfinished_text.insert('end',item[key])
+                    check_unfinished_text.insert('end','\n')
+                if key=='label_list':
+                    for it in item[key]:
+                        check_unfinished_text.insert('end',it)
+                        check_unfinished_text.insert('end','\n')
+    
+def check_unfinished_pre(check_unfinished_label,unfinished_choice,check_unfinished_text,curr_unfinished_index,check_unfinished_index,check_diff_save):
+    for widget in unfinished_choice.winfo_children():
+        widget.grid_forget()
+        
+    curr_unfinished_index[0]-=1
+    if curr_unfinished_index[0]<0:
+        curr_unfinished_index[0]=0
+        tkinter.messagebox.showinfo('提示','已是最后一条')
+    
+    check_unfinished_text.delete('1.0','end')
+    unfinished_show(check_unfinished_text,curr_unfinished_index,check_unfinished_index,check_diff_save)
+    
+    check_unfinished_label.current(0)
+    even='<Button-1>'
+    check_unfinished_choice(even,unfinished_choice,check_unfinished_label,curr_unfinished_index,check_unfinished_index,check_unfinished_text)
+    
+    
+def check_unfinished_nxt(check_unfinished_label,unfinished_choice,check_unfinished_text,curr_unfinished_index,check_unfinished_index,check_diff_save):
+    for widget in unfinished_choice.winfo_children():
+        widget.grid_forget()
+    
+    curr_unfinished_index[0]+=1
+    if curr_unfinished_index[0]>=len(check_unfinished_index):
+        curr_unfinished_index[0]=len(check_unfinished_index)-1
+        tkinter.messagebox.showinfo('提示','已是最后一条')
+    
+    check_unfinished_text.delete('1.0','end')
+    
+    unfinished_show(check_unfinished_text,curr_unfinished_index,check_unfinished_index,check_diff_save)
+    
+    check_unfinished_label.current(0)
+    even='<Button-1>'
+    check_unfinished_choice(even,unfinished_choice,check_unfinished_label,curr_unfinished_index,check_unfinished_index,check_unfinished_text)
+    
+        
+def check_unfinished_choice(even,unfinished_choice,check_unfinished_label,curr_unfinished_index,check_unfinished_index,check_unfinished_text):
+    for widget in unfinished_choice.winfo_children():
+        widget.grid_forget()
+    
+    #当前标签索引
+    index=check_unfinished_label.current()
+    i=1
+    
+    v_unfinished=IntVar()
+    v_unfinished.set(check_diff_save[check_unfinished_index[curr_unfinished_index[0]]]['label_list'][index]['choice'])
+    
+    for key in check_diff_save[check_unfinished_index[curr_unfinished_index[0]]]['label_list'][index]:
+        if key!='tag' and key!='choice':
+            check_unfinished_button=Radiobutton(unfinished_choice,text=key,variable=v_unfinished,value=check_diff_save[check_unfinished_index[curr_unfinished_index[0]]]['label_list'][index][key],command=lambda:check_unfinished_select(v_unfinished,index,curr_unfinished_index,check_unfinished_index,check_diff_save))
+            check_unfinished_button.grid(row=0,column=i)
+            i=i+1
+
+def check_unfinished_select(v_unfinished,index,curr_unfinished_index,check_unfinished_index,check_diff_save):
+    check_diff_save[check_unfinished_index[curr_unfinished_index[0]]]['label_list'][index]['choice']=v_unfinished.get()
+    
+def check_unfinished_import_confirm(curr_unfinished_index,check_unfinished_index,check_diff_save):
+    check_diff_save[check_unfinished_index[curr_unfinished_index[0]]]['cflag']=2
+    
+def unfinished_detail(even,check_unfinished_list,check_unfinished_index,check_diff_save):
+    unfinished_detail_win=Toplevel()
+    unfinished_detail_win.geometry("500x470")
+    unfinished_detail_win.title('核查')
+    
+    unfinished_text=Frame(unfinished_detail_win,width=500,height=200)
+    unfinished_confirm=Frame(unfinished_detail_win,width=500,height=35)
+    unfinished_page=Frame(unfinished_detail_win,width=500,height=35)
+    unfinished_label=Frame(unfinished_detail_win,width=200,height=200)
+    unfinished_choice=Frame(unfinished_detail_win,width=300,height=200)
+    
+    unfinished_text.place(x=0,y=0)
+    unfinished_label.place(x=0,y=200)
+    unfinished_choice.place(x=200,y=200)
+    unfinished_confirm.place(x=0,y=400)
+    unfinished_page.place(x=0,y=435)
+    
+    check_unfinished_text=Text(unfinished_text,width=70,height=15)
+    check_unfinished_text.grid(row=0,column=0)
+    
+    #当前评论下标
+    curr_unfinished_index=[]
+    curr_unfinished_index.append(check_unfinished_list.curselection()[0])
+    
+    if len(check_unfinished_index)>0:
+        check_unfinished_text.insert('end',check_diff_save[check_unfinished_index[check_unfinished_index[curr_unfinished_index[0]]]]['comment_text'])
+        check_unfinished_text.insert('end','\n')
+        check_unfinished_text.insert('end','\n')
+    
+        
+        for item in check_diff_save[check_unfinished_index[curr_unfinished_index[0]]]['check_comment']:
+            for key in item:
+                if key=='username':
+                    check_unfinished_text.insert('end',item[key])
+                    check_unfinished_text.insert('end','\n')
+                if key=='label_list':
+                    for it in item[key]:
+                        check_unfinished_text.insert('end',it)
+                        check_unfinished_text.insert('end','\n')
+            
+        
+    #设置下拉框标签
+    check_unfinished_name=[]
+    for item in tag_all:
+        check_unfinished_name.append(item['tag'])
+        
+    check_unfinished_label=ttk.Combobox(unfinished_label,value=check_unfinished_name,state='readonly')
+    check_unfinished_label.grid(row=0,column=0)
+    
+    check_unfinished_label.bind("<<ComboboxSelected>>",lambda even:check_unfinished_choice(even,unfinished_choice,check_unfinished_label,curr_unfinished_index,check_unfinished_index,check_unfinished_text))
+    
+    unfinished_pre=Button(unfinished_page,text='上一条',command=lambda:check_unfinished_pre(check_unfinished_label,unfinished_choice,check_unfinished_text,curr_unfinished_index,check_unfinished_index,check_diff_save))
+    unfinished_pre.place(x=5,y=0)
+    
+    unfinished_nxt=Button(unfinished_page,text='下一条',command=lambda:check_unfinished_nxt(check_unfinished_label,unfinished_choice,check_unfinished_text,curr_unfinished_index,check_unfinished_index,check_diff_save))
+    unfinished_nxt.place(x=450,y=0)
+    
+    unfinished_check_confirm=Button(unfinished_page,text='确定',command=lambda:check_unfinished_import_confirm(curr_unfinished_index,check_unfinished_index,check_diff_save))
+    unfinished_check_confirm.place(x=230,y=0)
+    
+    check_unfinished_label.current(0)
+    even='<Button-1>'
+    check_unfinished_choice(even,unfinished_choice,check_unfinished_label,curr_unfinished_index,check_unfinished_index,check_unfinished_text)
+    
+    
+    unfinished_detail_win.mainloop()
+
+def unfinished_save(check_diff_save):
+    f=asksaveasfilename(initialfile="未命名.json",defaultextension=".json")
+    f_save=open(f,'w')
+    
+    for item in check_diff_save:
+        item=json.dumps(item,ensure_ascii=False)
+        f_save.write(item)
+        f_save.write('\n')
+    f_save.close()
+    
+    #清空
+    check_diff_save.clear()
+
+def unfinished_export(check_diff_save):
+    f=asksaveasfilename(initialfile="未命名.json",defaultextension=".json")
+    f_export=open(f,'w')
+    
+    for item in check_diff_save:
+        it_tmp={}
+        for key in item:
+            if key=='comment_text':
+                it_tmp['comment_text']=item[key]
+            if key=='label_list':
+                it_tmp['label_list']=item[key]
+        
+        it_tmp=json.dumps(it_tmp,ensure_ascii=False)
+        f_export.write(it_tmp)
+        f_export.write('\n')
+    
+    f_export.close()
+    
+    #清空
+    check_diff_save.clear()
+            
+    
+#待完成核查模块
+def check_unfinished():
+    check_unfinished_win=Tk()
+    check_unfinished_win.geometry("500x400")
+    menubar=Menu(check_unfinished_win)
+    menubar.add_command(label='导入未完成核查文件',command=lambda:check_unfinshed_import(check_diff_save,check_unfinished_list))
+    menubar.add_command(label='保存',command=lambda:unfinished_save(check_diff_save))
+    menubar.add_command(label='导出核查文件',command=lambda:unfinished_export(check_diff_save))
+    check_unfinished_win['menu']=menubar
+    
+    check_unfinished_scroll=Scrollbar(check_unfinished_win)
+    check_unfinished_scroll.pack(side=RIGHT,fill=Y)
+    
+    check_unfinished_list=Listbox(check_unfinished_win,width=30,height=5,yscrollcommand=check_unfinished_scroll.set)
+    check_unfinished_list.pack(side=LEFT,fill=BOTH,expand=True)
+    check_unfinished_scroll.config(command=check_unfinished_list.yview)
+    check_unfinished_list.bind("<Double-Button-1>",lambda even:unfinished_detail(even,check_unfinished_list,check_unfinished_index,check_diff_save))
+    check_unfinished_win.mainloop()
+
            
 root=Tk()
 root.title("数据标注软件")
@@ -1711,7 +2156,7 @@ root.geometry("800x450")
 menubar=Menu(root)
 
 fmenu=Menu(menubar)
-fmenu.add_command(label='导入下载数据',command=lambda:importfile(comment_list))
+fmenu.add_command(label='导入下载数据',command=lambda:importfile(comment_list,root))
 fmenu.add_command(label="导出标注评论数据",command=lambda:labeled_comment_saveas(labeled_comment))
 fmenu.add_command(label="导出统计图数据",command=lambda:statistics_saveas(data_list))
 
@@ -1732,6 +2177,7 @@ menubar.add_cascade(label='文件',menu=fmenu)
 menubar.add_cascade(label='数据',menu=dmenu)
 menubar.add_command(label='标签',command=tag)
 menubar.add_command(label='标注核查',command=check)
+menubar.add_command(label='待完成核查',command=check_unfinished)
 
 root['menu']=menubar
 
